@@ -74,7 +74,7 @@ int main(void)
 	
 	
 		/////////////////
-		// UART
+		// UARTs
 		/////////////////
 
     /* Selecting P1.2 and P1.3 in UART mode */
@@ -90,59 +90,29 @@ int main(void)
     /* Enable UART module */
     UART_enableModule(EUSCI_A0_BASE);
 
-	
-	
-		/////////////////
-		// Timers
-		/////////////////
 
-    /* Starting and enabling ACLK (32kHz) */
-    CS_setReferenceOscillatorFrequency(CS_REFO_128KHZ);
-    CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_4);
 
-    /* Configuring Continuous Mode */
-    Timer_A_configureContinuousMode(TIMER_A0_BASE, &continuousModeConfig);
+    /* Selecting 2.2 and P2.3 in UART mode */
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P2,
+            GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
 
-    /* Enabling interrupts and going to sleep */
-    Interrupt_enableSleepOnIsrExit();
-    Interrupt_enableInterrupt(INT_TA0_N);
+    /* Setting DC1 to 12MHz */
+    CS_setDCOCenteredFrequency(CS_DC1_FREQUENCY_12);
 
-    /* Starting the Timer_A0 in continuous mode */
-    MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
-	
-	
+    /* Configuring UART Module */
+    UART_initModule(EUSCI_A1_BASE, &uartConfig_9600);
+
+    /* Enable UART module */
+    UART_enableModule(EUSCI_A1_BASE);
+
 		/////////////////
 		// Outputs
 		/////////////////
 
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
 	
-	
-	
-		/////////////////
-		// Inputs
-		/////////////////
-	
-    /* Configuring P1.1 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
-    Interrupt_enableInterrupt(INT_PORT1);
 
-    /* Configuring P1.4 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN4);
 
     /* Enabling SRAM Bank Retention */
     SysCtl_enableSRAMBankRetention(SYSCTL_SRAM_BANK1);
@@ -157,38 +127,27 @@ int main(void)
     }
 }
 
-/* GPIO ISR */
-void PORT1_IRQHandler(void)
+
+
+/* EUSCI A0 UART ISR - Echoes data back to PC host */
+void EUSCIA1_IRQHandler(void)
 {
-    uint32_t status;
+    uint32_t status = UART_getEnabledInterruptStatus(EUSCI_A1_BASE);
 
-    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, status);
+    UART_clearInterruptFlag(EUSCI_A1_BASE, status);
 
-    /* Toggling the output on the LED */
-    if(status & GPIO_PIN1)
+    if(status & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
     {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+        char data = (char) UART_receiveData(EUSCI_A1_BASE);
+
+        if (data == 'n') {
+          GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
+          printDebug("LED is on.");
+        } else {
+          GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
+          printDebug("LED is off");
+        }
     }
 
-    if(status & GPIO_PIN4)
-    {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN0);
-    }
-
-}
-//******************************************************************************
-//
-//This is the TIMERA interrupt vector service routine.
-//
-//******************************************************************************
-void TA0_N_IRQHandler(void)
-{
-		char* message;
-    Timer_A_clearInterruptFlag(TIMER_A0_BASE);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
-		message = "My Debug Message";
-		printDebug(message);
 }
 
