@@ -1,0 +1,9 @@
+--cpu=Cortex-M4.fp
+".\build\gpio_input_interrupt.o"
+"..\..\..\..\..\driverlib\MSP432P4xx\keil\msp432p4xx_driverlib.lib"
+".\build\startup_msp432p401r_uvision.o"
+".\build\system_msp432p401r.o"
+--strict --scatter ".\Build\gpio_input_interrupt.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\gpio_input_interrupt.map" -o .\Build\gpio_input_interrupt.axf
