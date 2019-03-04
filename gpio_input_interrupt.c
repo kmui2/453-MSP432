@@ -89,21 +89,33 @@ int main(void)
 
     /* Enable UART module */
     UART_enableModule(EUSCI_A0_BASE);
+		
 
 
-
-    /* Selecting 2.2 and P2.3 in UART mode */
-    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P2,
+    /* Selecting 3.2 and P3.3 in UART mode */
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3,
             GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
 
-    /* Setting DC1 to 12MHz */
-    CS_setDCOCenteredFrequency(CS_DC1_FREQUENCY_12);
 
     /* Configuring UART Module */
-    UART_initModule(EUSCI_A1_BASE, &uartConfig_9600);
+    UART_initModule(EUSCI_A2_BASE, &uartConfig_9600);
 
     /* Enable UART module */
-    UART_enableModule(EUSCI_A1_BASE);
+    UART_enableModule(EUSCI_A2_BASE);
+
+
+
+    /* Selecting 9.6 and P9.7 in UART mode */
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P9,
+            GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7, GPIO_PRIMARY_MODULE_FUNCTION);
+
+    /* Configuring UART Module */
+    UART_initModule(EUSCI_A3_BASE, &uartConfig_9600);
+
+    /* Enable UART module */
+    UART_enableModule(EUSCI_A3_BASE);
+
+
 
 		/////////////////
 		// Outputs
@@ -117,8 +129,21 @@ int main(void)
     /* Enabling SRAM Bank Retention */
     SysCtl_enableSRAMBankRetention(SYSCTL_SRAM_BANK1);
     
-    /* Enabling MASTER interrupts */
+    /* Enabling interrupts */
+    UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    Interrupt_enableInterrupt(INT_EUSCIA0);
+		
+    UART_enableInterrupt(EUSCI_A1_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    Interrupt_enableInterrupt(INT_EUSCIA2);
+		
+    UART_enableInterrupt(EUSCI_A3_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    Interrupt_enableInterrupt(INT_EUSCIA3);
+		
+		
+    Interrupt_enableSleepOnIsrExit();
     Interrupt_enableMaster();   
+		
+		printDebug("Initialized\n");
 
     /* Going to LPM3 */
     while (1)
@@ -129,18 +154,20 @@ int main(void)
 
 
 
-/* EUSCI A0 UART ISR - Echoes data back to PC host */
-void EUSCIA1_IRQHandler(void)
+/* EUSCI A1 UART ISR - Toggles LED */
+void EUSCIA2_IRQHandler(void)
 {
-    uint32_t status = UART_getEnabledInterruptStatus(EUSCI_A1_BASE);
-
-    UART_clearInterruptFlag(EUSCI_A1_BASE, status);
+		uint32_t status = UART_getEnabledInterruptStatus(EUSCI_A2_BASE);
+    printDebug("A2 Received\n");
+		
+    UART_clearInterruptFlag(EUSCI_A2_BASE, status);
 
     if(status & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
     {
-        char data = (char) UART_receiveData(EUSCI_A1_BASE);
+        char data = (char) UART_receiveData(EUSCI_A2_BASE);
 
         if (data == 'n') {
+
           GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
           printDebug("LED is on.");
         } else {
@@ -150,4 +177,25 @@ void EUSCIA1_IRQHandler(void)
     }
 
 }
+
+
+/* EUSCI A0 UART ISR - Reroutes serial data from PUTTY A0 to the UART the Bluetooth module is connected A3 then to A2 where the receiver Bluetooth module is connected. */
+void EUSCIA0_IRQHandler(void)
+{
+    uint32_t status = UART_getEnabledInterruptStatus(EUSCI_A0_BASE);
+
+    UART_clearInterruptFlag(EUSCI_A0_BASE, status);
+
+    if(status & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        char data = reverse(UART_receiveData(EUSCI_A0_BASE));
+				
+			printDebug("A3 transmitted: ");
+			printDebug(&data);
+				UART_transmitData(EUSCI_A3_BASE, data);
+    }
+
+}
+
+
 
