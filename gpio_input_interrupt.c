@@ -55,13 +55,15 @@ unsigned char reverse(unsigned char b) {
    return b;
 }
 
-void printDebug(char* message) {
+void sendCmd(char* message) {
 		uint16_t i = 0;
 		while (message[i] != '\0') {
 			while(!(UCA0IFG&UCTXIFG));
 			UART_transmitData(EUSCI_A0_BASE, reverse(message[i]));
 			i++;
 		}
+		UART_transmitData(EUSCI_A0_BASE, reverse(message[i]));
+		UART_transmitData(EUSCI_A0_BASE, reverse('\n'));
 }
 
 
@@ -108,42 +110,8 @@ int main(void)
     Interrupt_enableInterrupt(INT_TA0_N);
 
     /* Starting the Timer_A0 in continuous mode */
-    MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
+    Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
 	
-	
-		/////////////////
-		// Outputs
-		/////////////////
-
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
-	
-	
-	
-		/////////////////
-		// Inputs
-		/////////////////
-	
-    /* Configuring P1.1 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
-    Interrupt_enableInterrupt(INT_PORT1);
-
-    /* Configuring P1.4 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN4);
-
     /* Enabling SRAM Bank Retention */
     SysCtl_enableSRAMBankRetention(SYSCTL_SRAM_BANK1);
     
@@ -157,26 +125,10 @@ int main(void)
     }
 }
 
-/* GPIO ISR */
-void PORT1_IRQHandler(void)
-{
-    uint32_t status;
+uint16_t ticks = 0;
+#define NUM_SCREENS 5
+char* screens[] = { "MAIN", "TIC_TAC_TOE", "TRIVIA", "SIMON_SAYS", "ROCK_PAPER_SCISSORS" };
 
-    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, status);
-
-    /* Toggling the output on the LED */
-    if(status & GPIO_PIN1)
-    {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
-    }
-
-    if(status & GPIO_PIN4)
-    {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN0);
-    }
-
-}
 //******************************************************************************
 //
 //This is the TIMERA interrupt vector service routine.
@@ -184,11 +136,11 @@ void PORT1_IRQHandler(void)
 //******************************************************************************
 void TA0_N_IRQHandler(void)
 {
-		char* message;
     Timer_A_clearInterruptFlag(TIMER_A0_BASE);
     GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
     GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
-		message = "My Debug Message";
-		printDebug(message);
+		sendCmd(screens[ticks % NUM_SCREENS]);
+	
+		ticks++;
 }
 
