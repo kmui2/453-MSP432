@@ -1,11 +1,74 @@
 /* DriverLib Includes */
 #include "driverlib.h"
+#include <stdio.h>
 
 /* Standard Includes */
 #include <stdint.h>
 
 #include <stdbool.h>
 #include <string.h>
+
+#define D_PIN GPIO_PIN0
+#define C_PIN GPIO_PIN1
+#define B_PIN GPIO_PIN2
+#define A_PIN GPIO_PIN3
+
+#define DEC_0_HIGH_PINS 0
+#define DEC_0_LOW_PINS D_PIN | C_PIN | B_PIN | A_PIN 
+
+#define DEC_1_HIGH_PINS A_PIN
+#define DEC_1_LOW_PINS D_PIN | C_PIN | B_PIN
+
+#define DEC_2_HIGH_PINS B_PIN
+#define DEC_2_LOW_PINS D_PIN | C_PIN | A_PIN
+
+#define DEC_3_HIGH_PINS B_PIN | A_PIN
+#define DEC_3_LOW_PINS D_PIN | C_PIN
+
+#define DEC_4_HIGH_PINS C_PIN
+#define DEC_4_LOW_PINS D_PIN | B_PIN | A_PIN
+
+#define DEC_5_HIGH_PINS C_PIN | A_PIN
+#define DEC_5_LOW_PINS D_PIN | B_PIN
+
+#define DEC_6_HIGH_PINS C_PIN | B_PIN
+#define DEC_6_LOW_PINS D_PIN | A_PIN
+
+#define DEC_7_HIGH_PINS C_PIN | B_PIN | A_PIN
+#define DEC_7_LOW_PINS D_PIN
+
+#define DEC_8_HIGH_PINS D_PIN
+#define DEC_8_LOW_PINS C_PIN | B_PIN | A_PIN
+
+#define DEC_9_HIGH_PINS D_PIN | A_PIN
+#define DEC_9_LOW_PINS C_PIN | B_PIN
+
+const uint_fast8_t decHighPins[] = {
+  DEC_0_HIGH_PINS,
+  DEC_1_HIGH_PINS,
+  DEC_2_HIGH_PINS,
+  DEC_3_HIGH_PINS,
+  DEC_4_HIGH_PINS,
+  DEC_5_HIGH_PINS,
+  DEC_6_HIGH_PINS,
+  DEC_7_HIGH_PINS,
+  DEC_8_HIGH_PINS,
+  DEC_9_HIGH_PINS,
+};
+
+const uint_fast8_t decLowPins[] = {
+  DEC_0_LOW_PINS,
+  DEC_1_LOW_PINS,
+  DEC_2_LOW_PINS,
+  DEC_3_LOW_PINS,
+  DEC_4_LOW_PINS,
+  DEC_5_LOW_PINS,
+  DEC_6_LOW_PINS,
+  DEC_7_LOW_PINS,
+  DEC_8_LOW_PINS,
+  DEC_9_LOW_PINS,
+};
+
 
 /* UART Configuration Parameter. These are the configuration parameters to
  * make the eUSCI A UART module to operate with a 115200 baud rate. These
@@ -108,41 +171,15 @@ int main(void)
     Interrupt_enableInterrupt(INT_TA0_N);
 
     /* Starting the Timer_A0 in continuous mode */
-    MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
+    Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
 	
 	
 		/////////////////
 		// Outputs
 		/////////////////
 
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
-	
-	
-	
-		/////////////////
-		// Inputs
-		/////////////////
-	
-    /* Configuring P1.1 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
-    Interrupt_enableInterrupt(INT_PORT1);
-
-    /* Configuring P1.4 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN4);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN4);
+    GPIO_setAsOutputPin(GPIO_PORT_P4, D_PIN | C_PIN | B_PIN | A_PIN);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P4, D_PIN | C_PIN | B_PIN | A_PIN);	
 
     /* Enabling SRAM Bank Retention */
     SysCtl_enableSRAMBankRetention(SYSCTL_SRAM_BANK1);
@@ -157,26 +194,8 @@ int main(void)
     }
 }
 
-/* GPIO ISR */
-void PORT1_IRQHandler(void)
-{
-    uint32_t status;
+int dec = 0;
 
-    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, status);
-
-    /* Toggling the output on the LED */
-    if(status & GPIO_PIN1)
-    {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
-    }
-
-    if(status & GPIO_PIN4)
-    {
-        GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN0);
-    }
-
-}
 //******************************************************************************
 //
 //This is the TIMERA interrupt vector service routine.
@@ -184,11 +203,14 @@ void PORT1_IRQHandler(void)
 //******************************************************************************
 void TA0_N_IRQHandler(void)
 {
-		char* message;
+		char message[42];
     Timer_A_clearInterruptFlag(TIMER_A0_BASE);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
-		message = "My Debug Message";
+    GPIO_setOutputHighOnPin(GPIO_PORT_P4, decHighPins[dec]);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P4, decLowPins[dec]);
+		sprintf(message, "%d", dec);
+    printDebug("Sending ");
 		printDebug(message);
+    printDebug("\n");
+    dec = (dec + 1) % 10;
 }
 
