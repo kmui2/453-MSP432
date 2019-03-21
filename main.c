@@ -1,22 +1,13 @@
 /* DriverLib Includes */
 #include "debug.h"
 #include "driverlib.h"
+#include "stepper.h"
 
 /* Standard Includes */
 #include <stdint.h>
 
 #include <stdbool.h>
 #include <string.h>
-
-
-/* UART Configuration Parameter. These are the configuration parameters to
- * make the eUSCI A UART module to operate with a 115200 baud rate. These
- * values were calculated using the online calculator that TI provides
- * at:
- * http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html
- */
- 
-
 
 const Timer_A_ContinuousModeConfig continuousModeConfig =
 {
@@ -43,6 +34,26 @@ int main(void)
 
 		initUartDebug();
 	
+	
+		/////////////////
+		// Outputs
+		/////////////////
+	
+		initStepper();
+    setStepperSpeed(15);
+
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
+		
+    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+		
+    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+		
+    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
+    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
+	
 		/////////////////
 		// Timers
 		/////////////////
@@ -59,25 +70,8 @@ int main(void)
     Interrupt_enableInterrupt(INT_TA0_N);
 
     /* Starting the Timer_A0 in continuous mode */
-    MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
-	
-	
-		/////////////////
-		// Outputs
-		/////////////////
+    Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
 
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-		
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
-	
 	
 	
 		/////////////////
@@ -100,6 +94,8 @@ int main(void)
     
     /* Enabling MASTER interrupts */
     Interrupt_enableMaster();   
+
+    step(2048);
 
     /* Going to LPM3 */
     while (1)
@@ -128,6 +124,8 @@ void PORT1_IRQHandler(void)
     }
 
 }
+
+
 //******************************************************************************
 //
 //This is the TIMERA interrupt vector service routine.
