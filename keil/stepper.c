@@ -68,6 +68,7 @@ float reload;
  * stop_delay is in seconds
  */
 void setStepperSpeed(long whatSpeed) {
+  // FIXME: whatSpeed is not used.
 	//step_delay = 60L / (float) number_of_steps / whatSpeed;
 	step_delay = 0.25;
 	reload = step_delay * 128000;
