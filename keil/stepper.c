@@ -137,6 +137,10 @@ void T32_INT1_IRQHandler(void)
   {
     // FIXME: Halt doesn't work
     Timer32_haltTimer(TIMER32_BASE);
+		digitalWrite(MOTOR_PIN_1, LOW);
+		digitalWrite(MOTOR_PIN_2, LOW);
+		digitalWrite(MOTOR_PIN_3, LOW);
+		digitalWrite(MOTOR_PIN_4, LOW);
   }
     // increment or decrement the step number,
     // depending on direction:
