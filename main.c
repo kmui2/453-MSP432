@@ -2,20 +2,13 @@
 #include "debug.h"
 #include "driverlib.h"
 #include "stepper.h"
+#include "time_and_down.h"
 
 /* Standard Includes */
 #include <stdint.h>
 
 #include <stdbool.h>
 #include <string.h>
-
-const Timer_A_ContinuousModeConfig continuousModeConfig =
-{
-        TIMER_A_CLOCKSOURCE_ACLK,           // ACLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_1,      // ACLK/1 = 32.768khz
-        TIMER_A_TAIE_INTERRUPT_ENABLE,      // Enable Overflow ISR
-        TIMER_A_DO_CLEAR                    // Clear Counter
-};
 
 int main(void)
 {
@@ -41,6 +34,7 @@ int main(void)
 	
 		initStepper();
     setStepperSpeed(15);
+    initTimeAndDown();
 
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
@@ -53,25 +47,6 @@ int main(void)
 		
     GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN2);
     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
-	
-		/////////////////
-		// Timers
-		/////////////////
-
-    /* Starting and enabling ACLK (32kHz) */
-    CS_setReferenceOscillatorFrequency(CS_REFO_128KHZ);
-    CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_4);
-
-    /* Configuring Continuous Mode */
-    Timer_A_configureContinuousMode(TIMER_A0_BASE, &continuousModeConfig);
-
-    /* Enabling interrupts and going to sleep */
-    Interrupt_enableSleepOnIsrExit();
-    Interrupt_enableInterrupt(INT_TA0_N);
-
-    /* Starting the Timer_A0 in continuous mode */
-    Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
-
 	
 	
 		/////////////////
@@ -96,7 +71,7 @@ int main(void)
     Interrupt_enableMaster();   
 
     step(2048);
-
+    startTime();
     /* Going to LPM3 */
     while (1)
     {
@@ -124,20 +99,3 @@ void PORT1_IRQHandler(void)
     }
 
 }
-
-
-//******************************************************************************
-//
-//This is the TIMERA interrupt vector service routine.
-//
-//******************************************************************************
-void TA0_N_IRQHandler(void)
-{
-		char* message;
-    Timer_A_clearInterruptFlag(TIMER_A0_BASE);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
-		message = "My Debug Message";
-		printDebug(message);
-}
-

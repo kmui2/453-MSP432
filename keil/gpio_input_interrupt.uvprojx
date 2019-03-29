@@ -483,6 +483,36 @@
               <FileType>5</FileType>
               <FilePath>.\timer_configs.h</FilePath>
             </File>
+            <File>
+              <FileName>time_and_down.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\time_and_down.c</FilePath>
+            </File>
+            <File>
+              <FileName>time_and_down.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\time_and_down.h</FilePath>
+            </File>
+            <File>
+              <FileName>cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\cmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\cmd.h</FilePath>
+            </File>
+            <File>
+              <FileName>helpers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\helpers.c</FilePath>
+            </File>
+            <File>
+              <FileName>helpers.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\helpers.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
