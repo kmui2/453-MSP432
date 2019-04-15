@@ -1,5 +1,5 @@
-#ifndef __SCREEN_H__
-#define __SCREEN_H__
+#ifndef __TOUCH_H__
+#define __TOUCH_H__
 
 #include "driverlib.h"
 

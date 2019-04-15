@@ -3,6 +3,7 @@
 #include "driverlib.h"
 #include "time_and_down.h"
 #include "cmd.h"
+#include "seven_segment.h"
 
 /* Standard Includes */
 #include <stdint.h>
@@ -103,6 +104,7 @@ void resetDistance(void) {
 };
 
 
+int dec = 0;
 
 //******************************************************************************
 //
@@ -123,6 +125,9 @@ void TA0_N_IRQHandler(void)
 	// 	pauseTime();
 	// }
 	decrementTime();
+	
+	dec = (dec + 1) % 10;
+	setSevenSegment(dec);
 
 	sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
 	sendCmd(cmd);

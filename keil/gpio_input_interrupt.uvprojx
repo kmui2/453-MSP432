@@ -523,6 +523,16 @@
               <FileType>5</FileType>
               <FilePath>.\touch.h</FilePath>
             </File>
+            <File>
+              <FileName>seven_segment.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\seven_segment.c</FilePath>
+            </File>
+            <File>
+              <FileName>seven_segment.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\seven_segment.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -534,6 +544,9 @@
               <FilePath>..\..\..\..\..\driverlib\MSP432P4xx\keil\msp432p4xx_driverlib.lib</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>New Group</GroupName>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>

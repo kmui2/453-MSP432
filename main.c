@@ -3,6 +3,8 @@
 #include "driverlib.h"
 #include "stepper.h"
 #include "time_and_down.h"
+#include "seven_segment.h"
+#include "touch.h"
 
 /* Standard Includes */
 #include <stdint.h>
@@ -35,6 +37,8 @@ int main(void)
 		initStepper();
     setStepperSpeed(15);
     initTimeAndDown();
+    initSevenSegment();
+    initTouch();
 
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
