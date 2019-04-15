@@ -23,21 +23,21 @@ int main(void)
     /* Setting DCO to 12MHz */
     CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_12);
 
-		/////////////////
-		// UART
-		/////////////////
+    /////////////////
+    // UART
+    /////////////////
 
-		initUartDebug();
-	
-	
-		/////////////////
-		// Outputs
-		/////////////////
-	
-		initStepper();
+    initUartDebug();
+
+
+    /////////////////
+    // Outputs
+    /////////////////
+
+    initStepper();
     setStepperSpeed(15);
-    initTimeAndDown();
     initSevenSegment();
+    initTimeAndDown();
     initTouch();
 
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);

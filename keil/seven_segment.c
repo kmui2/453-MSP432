@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define SEVEN_SEGMENT_PORT GPIO_PORT_P4
+
 #define D_PIN GPIO_PIN0
 #define C_PIN GPIO_PIN1
 #define B_PIN GPIO_PIN2
@@ -66,12 +68,12 @@
 };
  
 void initSevenSegment() {
-	GPIO_setAsOutputPin(GPIO_PORT_P4, D_PIN | C_PIN | B_PIN | A_PIN);
-	GPIO_setOutputLowOnPin(GPIO_PORT_P4, D_PIN | C_PIN | B_PIN | A_PIN);	
+	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT, D_PIN | C_PIN | B_PIN | A_PIN);
+	GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT, D_PIN | C_PIN | B_PIN | A_PIN);	
 }
 
 void setSevenSegment(int dec) {
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, decHighPins[dec]);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, decLowPins[dec]);
+    GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT, decHighPins[dec]);
+    GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT, decLowPins[dec]);
 }
 
