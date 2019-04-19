@@ -4,7 +4,6 @@
 #include "stepper.h"
 #include "time_and_down.h"
 #include "seven_segment.h"
-#include "touch.h"
 
 /* Standard Includes */
 #include <stdint.h>
@@ -38,7 +37,6 @@ int main(void)
     setStepperSpeed(15);
     initSevenSegment();
     initTimeAndDown();
-    initTouch();
 
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
