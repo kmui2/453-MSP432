@@ -4,76 +4,295 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define SEVEN_SEGMENT_PORT GPIO_PORT_P4
+#define SEVEN_SEGMENT_PORT0 GPIO_PORT_P8
 
-#define D_PIN GPIO_PIN0
-#define C_PIN GPIO_PIN1
-#define B_PIN GPIO_PIN2
-#define A_PIN GPIO_PIN3
+#define D_PIN0 GPIO_PIN7
+#define C_PIN0 GPIO_PIN6
+#define B_PIN0 GPIO_PIN5
+#define A_PIN0 GPIO_PIN4
 
- #define DEC_0_HIGH_PINS 0
-#define DEC_0_LOW_PINS D_PIN | C_PIN | B_PIN | A_PIN 
+ #define DEC_0_HIGH_PINS0 0
+#define DEC_0_LOW_PINS0 D_PIN0| C_PIN0| B_PIN0| A_PIN0
 
- #define DEC_1_HIGH_PINS A_PIN
-#define DEC_1_LOW_PINS D_PIN | C_PIN | B_PIN
+ #define DEC_1_HIGH_PINS0 A_PIN0
+#define DEC_1_LOW_PINS0 D_PIN0| C_PIN0| B_PIN0
 
- #define DEC_2_HIGH_PINS B_PIN
-#define DEC_2_LOW_PINS D_PIN | C_PIN | A_PIN
+ #define DEC_2_HIGH_PINS0 B_PIN0
+#define DEC_2_LOW_PINS0 D_PIN0| C_PIN0| A_PIN0
 
- #define DEC_3_HIGH_PINS B_PIN | A_PIN
-#define DEC_3_LOW_PINS D_PIN | C_PIN
+ #define DEC_3_HIGH_PINS0 B_PIN0| A_PIN0
+#define DEC_3_LOW_PINS0 D_PIN0| C_PIN0
 
- #define DEC_4_HIGH_PINS C_PIN
-#define DEC_4_LOW_PINS D_PIN | B_PIN | A_PIN
+ #define DEC_4_HIGH_PINS0 C_PIN0
+#define DEC_4_LOW_PINS0 D_PIN0| B_PIN0| A_PIN0
 
- #define DEC_5_HIGH_PINS C_PIN | A_PIN
-#define DEC_5_LOW_PINS D_PIN | B_PIN
+ #define DEC_5_HIGH_PINS0 C_PIN0| A_PIN0
+#define DEC_5_LOW_PINS0 D_PIN0| B_PIN0
 
- #define DEC_6_HIGH_PINS C_PIN | B_PIN
-#define DEC_6_LOW_PINS D_PIN | A_PIN
+ #define DEC_6_HIGH_PINS0 C_PIN0| B_PIN0
+#define DEC_6_LOW_PINS0 D_PIN0| A_PIN0
 
- #define DEC_7_HIGH_PINS C_PIN | B_PIN | A_PIN
-#define DEC_7_LOW_PINS D_PIN
+ #define DEC_7_HIGH_PINS0 C_PIN0| B_PIN0| A_PIN0
+#define DEC_7_LOW_PINS0 D_PIN0
 
- #define DEC_8_HIGH_PINS D_PIN
-#define DEC_8_LOW_PINS C_PIN | B_PIN | A_PIN
+ #define DEC_8_HIGH_PINS0 D_PIN0
+#define DEC_8_LOW_PINS0 C_PIN0| B_PIN0| A_PIN0
 
- #define DEC_9_HIGH_PINS D_PIN | A_PIN
-#define DEC_9_LOW_PINS C_PIN | B_PIN
+ #define DEC_9_HIGH_PINS0 D_PIN0| A_PIN0
+#define DEC_9_LOW_PINS0 C_PIN0| B_PIN0
 
- const uint_fast8_t decHighPins[] = {
-  DEC_0_HIGH_PINS,
-  DEC_1_HIGH_PINS,
-  DEC_2_HIGH_PINS,
-  DEC_3_HIGH_PINS,
-  DEC_4_HIGH_PINS,
-  DEC_5_HIGH_PINS,
-  DEC_6_HIGH_PINS,
-  DEC_7_HIGH_PINS,
-  DEC_8_HIGH_PINS,
-  DEC_9_HIGH_PINS,
+
+#define SEVEN_SEGMENT_PORT1 GPIO_PORT_P7
+
+#define D_PIN1 GPIO_PIN3
+#define C_PIN1 GPIO_PIN2
+#define B_PIN1 GPIO_PIN1
+#define A_PIN1 GPIO_PIN0
+
+ #define DEC_0_HIGH_PINS1 0
+#define DEC_0_LOW_PINS1 D_PIN1| C_PIN1| B_PIN1| A_PIN1
+
+ #define DEC_1_HIGH_PINS1 A_PIN1
+#define DEC_1_LOW_PINS1 D_PIN1| C_PIN1| B_PIN1
+
+ #define DEC_2_HIGH_PINS1 B_PIN1
+#define DEC_2_LOW_PINS1 D_PIN1| C_PIN1| A_PIN1
+
+ #define DEC_3_HIGH_PINS1 B_PIN1| A_PIN1
+#define DEC_3_LOW_PINS1 D_PIN1| C_PIN1
+
+ #define DEC_4_HIGH_PINS1 C_PIN1
+#define DEC_4_LOW_PINS1 D_PIN1| B_PIN1| A_PIN1
+
+ #define DEC_5_HIGH_PINS1 C_PIN1| A_PIN1
+#define DEC_5_LOW_PINS1 D_PIN1| B_PIN1
+
+ #define DEC_6_HIGH_PINS1 C_PIN1| B_PIN1
+#define DEC_6_LOW_PINS1 D_PIN1| A_PIN1
+
+ #define DEC_7_HIGH_PINS1 C_PIN1| B_PIN1| A_PIN1
+#define DEC_7_LOW_PINS1 D_PIN1
+
+ #define DEC_8_HIGH_PINS1 D_PIN1
+#define DEC_8_LOW_PINS1 C_PIN1| B_PIN1| A_PIN1
+
+ #define DEC_9_HIGH_PINS1 D_PIN1| A_PIN1
+#define DEC_9_LOW_PINS1 C_PIN1| B_PIN1
+
+
+#define SEVEN_SEGMENT_PORT2 GPIO_PORT_P10
+
+#define D_PIN2 GPIO_PIN3
+#define C_PIN2 GPIO_PIN2
+#define B_PIN2 GPIO_PIN1
+#define A_PIN2 GPIO_PIN0
+
+ #define DEC_0_HIGH_PINS2 0
+#define DEC_0_LOW_PINS2 D_PIN2| C_PIN2| B_PIN2| A_PIN2
+
+ #define DEC_1_HIGH_PINS2 A_PIN2
+#define DEC_1_LOW_PINS2 D_PIN2| C_PIN2| B_PIN2
+
+ #define DEC_2_HIGH_PINS2 B_PIN2
+#define DEC_2_LOW_PINS2 D_PIN2| C_PIN2| A_PIN2
+
+ #define DEC_3_HIGH_PINS2 B_PIN2| A_PIN2
+#define DEC_3_LOW_PINS2 D_PIN2| C_PIN2
+
+ #define DEC_4_HIGH_PINS2 C_PIN2
+#define DEC_4_LOW_PINS2 D_PIN2| B_PIN2| A_PIN2
+
+ #define DEC_5_HIGH_PINS2 C_PIN2| A_PIN2
+#define DEC_5_LOW_PINS2 D_PIN2| B_PIN2
+
+ #define DEC_6_HIGH_PINS2 C_PIN2| B_PIN2
+#define DEC_6_LOW_PINS2 D_PIN2| A_PIN2
+
+ #define DEC_7_HIGH_PINS2 C_PIN2| B_PIN2| A_PIN2
+#define DEC_7_LOW_PINS2 D_PIN2
+
+ #define DEC_8_HIGH_PINS2 D_PIN2
+#define DEC_8_LOW_PINS2 C_PIN2| B_PIN2| A_PIN2
+
+ #define DEC_9_HIGH_PINS2 D_PIN2| A_PIN2
+#define DEC_9_LOW_PINS2 C_PIN2| B_PIN2
+
+
+#define SEVEN_SEGMENT_PORT3 GPIO_PORT_P7
+
+#define D_PIN3 GPIO_PIN7
+#define C_PIN3 GPIO_PIN6
+#define B_PIN3 GPIO_PIN5
+#define A_PIN3 GPIO_PIN4
+
+ #define DEC_0_HIGH_PINS3 0
+#define DEC_0_LOW_PINS3 D_PIN3| C_PIN3| B_PIN3| A_PIN3
+
+ #define DEC_1_HIGH_PINS3 A_PIN3
+#define DEC_1_LOW_PINS3 D_PIN3| C_PIN3| B_PIN3
+
+ #define DEC_2_HIGH_PINS3 B_PIN3
+#define DEC_2_LOW_PINS3 D_PIN3| C_PIN3| A_PIN3
+
+ #define DEC_3_HIGH_PINS3 B_PIN3| A_PIN3
+#define DEC_3_LOW_PINS3 D_PIN3| C_PIN3
+
+ #define DEC_4_HIGH_PINS3 C_PIN3
+#define DEC_4_LOW_PINS3 D_PIN3| B_PIN3| A_PIN3
+
+ #define DEC_5_HIGH_PINS3 C_PIN3| A_PIN3
+#define DEC_5_LOW_PINS3 D_PIN3| B_PIN3
+
+ #define DEC_6_HIGH_PINS3 C_PIN3| B_PIN3
+#define DEC_6_LOW_PINS3 D_PIN3| A_PIN3
+
+ #define DEC_7_HIGH_PINS3 C_PIN3| B_PIN3| A_PIN3
+#define DEC_7_LOW_PINS3 D_PIN3
+
+ #define DEC_8_HIGH_PINS3 D_PIN3
+#define DEC_8_LOW_PINS3 C_PIN3| B_PIN3| A_PIN3
+
+ #define DEC_9_HIGH_PINS3 D_PIN3| A_PIN3
+#define DEC_9_LOW_PINS3 C_PIN3| B_PIN3
+
+ const uint_fast8_t decHighPins0[] = {
+  DEC_0_HIGH_PINS0,
+  DEC_1_HIGH_PINS0,
+  DEC_2_HIGH_PINS0,
+  DEC_3_HIGH_PINS0,
+  DEC_4_HIGH_PINS0,
+  DEC_5_HIGH_PINS0,
+  DEC_6_HIGH_PINS0,
+  DEC_7_HIGH_PINS0,
+  DEC_8_HIGH_PINS0,
+  DEC_9_HIGH_PINS0,
 };
 
- const uint_fast8_t decLowPins[] = {
-  DEC_0_LOW_PINS,
-  DEC_1_LOW_PINS,
-  DEC_2_LOW_PINS,
-  DEC_3_LOW_PINS,
-  DEC_4_LOW_PINS,
-  DEC_5_LOW_PINS,
-  DEC_6_LOW_PINS,
-  DEC_7_LOW_PINS,
-  DEC_8_LOW_PINS,
-  DEC_9_LOW_PINS,
+ const uint_fast8_t decHighPins1[] = {
+  DEC_0_HIGH_PINS1,
+  DEC_1_HIGH_PINS1,
+  DEC_2_HIGH_PINS1,
+  DEC_3_HIGH_PINS1,
+  DEC_4_HIGH_PINS1,
+  DEC_5_HIGH_PINS1,
+  DEC_6_HIGH_PINS1,
+  DEC_7_HIGH_PINS1,
+  DEC_8_HIGH_PINS1,
+  DEC_9_HIGH_PINS1,
+};
+
+ const uint_fast8_t decHighPins2[] = {
+  DEC_0_HIGH_PINS2,
+  DEC_1_HIGH_PINS2,
+  DEC_2_HIGH_PINS2,
+  DEC_3_HIGH_PINS2,
+  DEC_4_HIGH_PINS2,
+  DEC_5_HIGH_PINS2,
+  DEC_6_HIGH_PINS2,
+  DEC_7_HIGH_PINS2,
+  DEC_8_HIGH_PINS2,
+  DEC_9_HIGH_PINS2,
+};
+
+ const uint_fast8_t decHighPins3[] = {
+  DEC_0_HIGH_PINS3,
+  DEC_1_HIGH_PINS3,
+  DEC_2_HIGH_PINS3,
+  DEC_3_HIGH_PINS3,
+  DEC_4_HIGH_PINS3,
+  DEC_5_HIGH_PINS3,
+  DEC_6_HIGH_PINS3,
+  DEC_7_HIGH_PINS3,
+  DEC_8_HIGH_PINS3,
+  DEC_9_HIGH_PINS3,
+};
+
+ const uint_fast8_t decLowPins0[] = {
+  DEC_0_LOW_PINS0,
+  DEC_1_LOW_PINS0,
+  DEC_2_LOW_PINS0,
+  DEC_3_LOW_PINS0,
+  DEC_4_LOW_PINS0,
+  DEC_5_LOW_PINS0,
+  DEC_6_LOW_PINS0,
+  DEC_7_LOW_PINS0,
+  DEC_8_LOW_PINS0,
+  DEC_9_LOW_PINS0,
+};
+
+ const uint_fast8_t decLowPins1[] = {
+  DEC_0_LOW_PINS1,
+  DEC_1_LOW_PINS1,
+  DEC_2_LOW_PINS1,
+  DEC_3_LOW_PINS1,
+  DEC_4_LOW_PINS1,
+  DEC_5_LOW_PINS1,
+  DEC_6_LOW_PINS1,
+  DEC_7_LOW_PINS1,
+  DEC_8_LOW_PINS1,
+  DEC_9_LOW_PINS1,
+};
+
+ const uint_fast8_t decLowPins2[] = {
+  DEC_0_LOW_PINS2,
+  DEC_1_LOW_PINS2,
+  DEC_2_LOW_PINS2,
+  DEC_3_LOW_PINS2,
+  DEC_4_LOW_PINS2,
+  DEC_5_LOW_PINS2,
+  DEC_6_LOW_PINS2,
+  DEC_7_LOW_PINS2,
+  DEC_8_LOW_PINS2,
+  DEC_9_LOW_PINS2,
+};
+
+ const uint_fast8_t decLowPins3[] = {
+  DEC_0_LOW_PINS3,
+  DEC_1_LOW_PINS3,
+  DEC_2_LOW_PINS3,
+  DEC_3_LOW_PINS3,
+  DEC_4_LOW_PINS3,
+  DEC_5_LOW_PINS3,
+  DEC_6_LOW_PINS3,
+  DEC_7_LOW_PINS3,
+  DEC_8_LOW_PINS3,
+  DEC_9_LOW_PINS3,
 };
  
 void initSevenSegment() {
-	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT, D_PIN | C_PIN | B_PIN | A_PIN);
-	GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT, D_PIN | C_PIN | B_PIN | A_PIN);	
+	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT0, D_PIN0 | C_PIN0 | B_PIN0 | A_PIN0);
+	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT1, D_PIN1 | C_PIN1 | B_PIN1 | A_PIN1);
+	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT2, D_PIN2 | C_PIN2 | B_PIN2 | A_PIN2);
+	GPIO_setAsOutputPin(SEVEN_SEGMENT_PORT3, D_PIN3 | C_PIN3 | B_PIN3 | A_PIN3);
+
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT0, decHighPins0[0]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT0, decLowPins0[0]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT1, decHighPins1[0]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT1, decLowPins1[0]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT2, decHighPins2[0]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT2, decLowPins2[0]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT3, decHighPins3[0]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT3, decLowPins3[0]);
 }
 
 void setSevenSegment(int dec) {
-    GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT, decHighPins[dec]);
-    GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT, decLowPins[dec]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT0, decHighPins0[dec]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT0, decLowPins0[dec]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT1, decHighPins1[dec]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT1, decLowPins1[dec]);
+}
+
+void setSevenSegmentDisplay1(int score) {
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT0, decHighPins0[score % 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT0, decLowPins0[score % 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT1, decHighPins1[score / 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT1, decLowPins1[score / 10]);
+}
+
+void setSevenSegmentDisplay2(int score) {
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT2, decHighPins2[score % 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT2, decLowPins2[score % 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT3, decHighPins3[score / 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT3, decLowPins3[score / 10]);
 }
 

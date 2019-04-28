@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include "systick.h"
 
 #define HIGH 1
 #define LOW 0
@@ -17,10 +18,13 @@
  int step_number = 0;    // which step the motor is on
  int direction = 0;      // motor direction
  int last_step_time = 0; // time stamp in us of the last step taken
- int number_of_steps = 2048; // total number of steps for this motor
+ int number_of_steps = 4096; // total number of steps for this motor
  float step_delay = 0;
+ int i = 0;
 
 int steps_left = 0;
+
+int absolute_yardage = -10;
 
   // Arduino pins for the motor control connection:
 	// TODO: use #define
@@ -29,6 +33,11 @@ int steps_left = 0;
 	#define MOTOR_PIN_2 GPIO_PIN6
 	#define MOTOR_PIN_3 GPIO_PIN1
 	#define MOTOR_PIN_4 GPIO_PIN7
+
+
+int getYardage() {
+  return absolute_yardage;
+}
 
 void initStepper() {
     GPIO_setAsOutputPin(MOTOR_PORT, MOTOR_PIN_1);
@@ -70,7 +79,7 @@ float reload;
 void setStepperSpeed(long whatSpeed) {
   // FIXME: whatSpeed is not used.
 	//step_delay = 60L / (float) number_of_steps / whatSpeed;
-	step_delay = 0.25;
+	step_delay = 0.15;
 	reload = step_delay * 128000;
   Timer32_setCount(TIMER32_BASE, (int) reload);
 }
@@ -86,61 +95,105 @@ void digitalWrite(uint_fast16_t pin, int level) {
 void stepMotor(int thisStep)
 {
 	switch (thisStep) {
-		case 0:  // 1010
-			digitalWrite(MOTOR_PIN_1, HIGH);
+		case 0:  // 0001
+			digitalWrite(MOTOR_PIN_1, LOW);
+			digitalWrite(MOTOR_PIN_2, LOW);
+			digitalWrite(MOTOR_PIN_3, LOW);
+			digitalWrite(MOTOR_PIN_4, HIGH);
+		break;
+		case 1:  // 0011
+			digitalWrite(MOTOR_PIN_1, LOW);
+			digitalWrite(MOTOR_PIN_2, LOW);
+			digitalWrite(MOTOR_PIN_3, HIGH);
+			digitalWrite(MOTOR_PIN_4, HIGH);
+		break;
+		case 2:  //0010
+			digitalWrite(MOTOR_PIN_1, LOW);
 			digitalWrite(MOTOR_PIN_2, LOW);
 			digitalWrite(MOTOR_PIN_3, HIGH);
 			digitalWrite(MOTOR_PIN_4, LOW);
 		break;
-		case 1:  // 0110
+		case 3:  //0110
 			digitalWrite(MOTOR_PIN_1, LOW);
 			digitalWrite(MOTOR_PIN_2, HIGH);
 			digitalWrite(MOTOR_PIN_3, HIGH);
 			digitalWrite(MOTOR_PIN_4, LOW);
 		break;
-		case 2:  //0101
+		case 4:  //0100
 			digitalWrite(MOTOR_PIN_1, LOW);
 			digitalWrite(MOTOR_PIN_2, HIGH);
 			digitalWrite(MOTOR_PIN_3, LOW);
+			digitalWrite(MOTOR_PIN_4, LOW);
+		break;
+		case 5:  //1100
+			digitalWrite(MOTOR_PIN_1, HIGH);
+			digitalWrite(MOTOR_PIN_2, HIGH);
+			digitalWrite(MOTOR_PIN_3, LOW);
+			digitalWrite(MOTOR_PIN_4, LOW);
+		break;
+		case 6:  //1001
+			digitalWrite(MOTOR_PIN_1, HIGH);
+			digitalWrite(MOTOR_PIN_2, LOW);
+			digitalWrite(MOTOR_PIN_3, LOW);
 			digitalWrite(MOTOR_PIN_4, HIGH);
 		break;
-		case 3:  //1001
+		case 7:  //1001
 			digitalWrite(MOTOR_PIN_1, HIGH);
 			digitalWrite(MOTOR_PIN_2, LOW);
 			digitalWrite(MOTOR_PIN_3, LOW);
 			digitalWrite(MOTOR_PIN_4, HIGH);
 		break;
 	}
+	
 }
+
 
 void step(int steps_to_move) {
   bool is_running = steps_left > 0;
   steps_left = abs(steps_to_move);  // how many steps to take
+	
+  // determine direction based on whether steps_to_move is + or -:	  
 
-  // determine direction based on whether steps_to_mode is + or -:
   if (steps_to_move > 0) { direction = 1; }
   if (steps_to_move < 0) { direction = 0; }
-  
+	
+
   // only start timer when it hasn't started
-  if (!is_running) {
-    Timer32_startTimer(TIMER32_BASE, false);
-  }
+		if (!is_running) {
+			Timer32_startTimer(TIMER32_BASE, false);
+		}
+
 }
+void movefootball(int yards){
+	int steps;
+	steps=yards*409.6; 
+	if(yards%5==0){
+		step(steps);
+	}
+}
+
+void moveFootballToYardage(int yardage) {
+  int yardsToMove = yardage - absolute_yardage;
+  movefootball(yardsToMove);
+}
+
 
 
 /* Timer32 ISR */
 void T32_INT1_IRQHandler(void)
 {
-    Timer32_clearInterruptFlag(TIMER32_BASE);
-    steps_left--;
+	steps_left--;
+    Timer32_clearInterruptFlag(TIMER32_BASE); //clear the flag
+    
   if (steps_left <= 0)
   {
     // FIXME: Halt doesn't work
-    Timer32_haltTimer(TIMER32_BASE);
 		digitalWrite(MOTOR_PIN_1, LOW);
 		digitalWrite(MOTOR_PIN_2, LOW);
 		digitalWrite(MOTOR_PIN_3, LOW);
 		digitalWrite(MOTOR_PIN_4, LOW);
+		Timer32_haltTimer(TIMER32_BASE);
+		
   }
     // increment or decrement the step number,
     // depending on direction:
@@ -159,6 +212,7 @@ void T32_INT1_IRQHandler(void)
       step_number--;
     }
     // decrement the steps left:
-    stepMotor(step_number % 4);
+    stepMotor(step_number % 7);
 
 }
+

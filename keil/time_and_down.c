@@ -26,6 +26,32 @@ uint8_t minutes = 15;
 uint8_t seconds = 0;
 uint8_t down = 1;
 uint8_t distance = 10;
+uint32_t player1_score = 0;
+uint32_t player2_score = 0;
+
+uint32_t getPlayer1Score() {
+	return player1_score;
+}
+
+void setPlayer1Score(uint32_t new_score) {
+	player1_score = new_score;
+}
+
+void incrementPlayer1ScoreBy(uint32_t score) {
+	player1_score += score;
+}
+
+uint32_t getPlayer2Score() {
+	return player2_score;
+}
+
+void setPlayer2Score(uint32_t new_score) {
+	player2_score = new_score;
+}
+
+void incrementPlayer2ScoreBy(uint32_t score) {
+	player2_score += score;
+}
 
 void initTimeAndDown(void) {
 
@@ -56,6 +82,9 @@ void incrementQuarter(void) {
 void resetQuarter(void) {
 	quarter = 1;
 };
+void setQuarter(uint8_t newQuarter) {
+	quarter = newQuarter;
+}
 
 void resetTime(void) {
 	minutes = 15;
@@ -91,6 +120,9 @@ void incrementDown(void) {
 void resetDown(void) {
 	down = 1;
 };
+void setDown(uint8_t newDown) {
+	down = newDown;
+}
 
 uint8_t getDistance(void) {
 	return distance;
@@ -116,8 +148,8 @@ void TA0_N_IRQHandler(void)
 	char cmd[100];
 		//char* message;
     Timer_A_clearInterruptFlag(TIMER_A0_BASE);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
-    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
+    // GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
+    // GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN2);
 		//message = "My Debug Message";
 		// printDebug(message);
 	
@@ -126,8 +158,9 @@ void TA0_N_IRQHandler(void)
 	// }
 	decrementTime();
 	
-	dec = (dec + 1) % 10;
-	setSevenSegment(dec);
+	dec = (dec + 1) % 100;
+	setSevenSegmentDisplay1(dec);
+	setSevenSegmentDisplay2(99 - dec);
 
 	sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
 	sendCmd(cmd);

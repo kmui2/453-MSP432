@@ -10,5 +10,8 @@ void initStepper(void);
 void setStepperSpeed(long whatSpeed);
 
 void step(int steps_to_move);
+void movefootball(int inches);
+void moveFootballToYardage(int yardage);
+int getYardage(void);
 
 #endif

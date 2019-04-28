@@ -4,5 +4,6 @@
 #include "driverlib.h"
 
 unsigned char reverse(unsigned char b);
+double r2(void);
 
 #endif
