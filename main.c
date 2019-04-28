@@ -4,9 +4,11 @@
 #include "stepper.h"
 #include "time_and_down.h"
 #include "seven_segment.h"
+#include "helpers.h"
 
 /* Standard Includes */
 #include <stdint.h>
+#include <stdio.h>
 
 #include <stdbool.h>
 #include <string.h>
@@ -14,6 +16,19 @@
 int main(void)
 {
     volatile uint32_t ii;
+    
+    const eUSCI_UART_Config uartConfig_9600 =
+    {
+            EUSCI_A_UART_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
+            78,                                      // BRDIV = 13
+            2,                                       // UCxBRF = 0
+            0,                                      // UCxBRS = 37
+            EUSCI_A_UART_NO_PARITY,                  // No Parity
+            EUSCI_A_UART_MSB_FIRST,                  // MSB First
+            EUSCI_A_UART_ONE_STOP_BIT,               // One stop bit
+            EUSCI_A_UART_MODE,                       // UART mode
+            EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION  // Oversampling
+    };
 
     /* Halting the Watchdog */
     WDT_A_holdTimer();
@@ -27,6 +42,20 @@ int main(void)
     /////////////////
 
     initUartDebug();
+	
+    /* Selecting 3.2 and P3.3 in UART mode */
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3,
+            GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+	
+    /* Configuring UART Module */
+    UART_initModule(EUSCI_A2_BASE, &uartConfig_9600);
+
+    /* Enable UART module */
+    UART_enableModule(EUSCI_A2_BASE);
+		
+		
+    UART_enableInterrupt(EUSCI_A2_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    Interrupt_enableInterrupt(INT_EUSCIA2);
 
 
     /////////////////
@@ -80,6 +109,25 @@ int main(void)
         PCM_gotoLPM0();
     }
 }
+
+
+
+/* EUSCI A2 UART ISR - Toggles LED */
+void EUSCIA2_IRQHandler(void)
+{
+		uint32_t status = UART_getEnabledInterruptStatus(EUSCI_A2_BASE);
+		
+    UART_clearInterruptFlag(EUSCI_A2_BASE, status);
+
+    if(status & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        uint8_t data = reverse(UART_receiveData(EUSCI_A2_BASE));
+				char message[100];
+				sprintf(message, "detection_status=%d\n", data);
+				printDebug(message);
+    }
+}
+
 
 /* GPIO ISR */
 void PORT1_IRQHandler(void)

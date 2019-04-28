@@ -1,6 +1,5 @@
 /* DriverLib Includes */
 #include "driverlib.h"
-#include "uart_configs.h"
 #include "helpers.h"
 
 /* Standard Includes */
@@ -10,7 +9,21 @@
 #include <string.h>
 #include "debug.h"
 
+
+
 void initUartDebug(void) {
+    const eUSCI_UART_Config uartConfig_9600 =
+    {
+            EUSCI_A_UART_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
+            78,                                      // BRDIV = 13
+            2,                                       // UCxBRF = 0
+            0,                                      // UCxBRS = 37
+            EUSCI_A_UART_NO_PARITY,                  // No Parity
+            EUSCI_A_UART_MSB_FIRST,                  // MSB First
+            EUSCI_A_UART_ONE_STOP_BIT,               // One stop bit
+            EUSCI_A_UART_MODE,                       // UART mode
+            EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION  // Oversampling
+    };
     /* Selecting P1.2 and P1.3 in UART mode */
     GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
             GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
