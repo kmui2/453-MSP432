@@ -172,9 +172,18 @@ void movefootball(int yards){
 	}
 }
 
+bool moveFootballForwardBy(int yards) {
+  if (absolute_yardage + yards <= 0 || absolute_yardage + yards >= 100) {
+    return true;
+  }
+  absolute_yardage += yards;
+  movefootball(yards);
+  return false;
+};
+
 void moveFootballToYardage(int yardage) {
   int yardsToMove = yardage - absolute_yardage;
-  movefootball(yardsToMove);
+  moveFootballForwardBy(yardsToMove);
 }
 
 

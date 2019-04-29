@@ -5,5 +5,6 @@
 
 unsigned char reverse(unsigned char b);
 double r2(void);
+void delayTimer(uint8_t seconds);
 
 #endif
