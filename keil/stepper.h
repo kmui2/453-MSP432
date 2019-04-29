@@ -10,7 +10,7 @@ void initStepper(void);
 void setStepperSpeed(long whatSpeed);
 
 void step(int steps_to_move);
-void movefootball(int inches);
+void movefootball(int yards);
 
 /**
  * Returns true if hits an endzone.

@@ -120,15 +120,15 @@ volatile int8_t simon_says_happening = false;
 volatile bool simon_says_player_won = false;
 volatile int8_t simon_says_seq[10];
 
-
 int main(void)
 {
-    volatile uint32_t ii;
-    char message[500];
-    int i;
-    int8_t outcome_res;
-    int8_t trivia_choice;
-    bool scoredTouchdown = false;
+volatile uint32_t ii;
+char message[500];
+int i;
+int8_t outcome_res;
+int8_t trivia_choice;
+bool scoredTouchdown = false;
+
 
     const eUSCI_UART_Config uartConfig_9600 =
         {
@@ -151,6 +151,17 @@ int main(void)
         TIMER_A_DO_CLEAR                    // Clear Counter
 }   ;
 
+/* Timer_A Capture Mode Configuration Parameter */
+const Timer_A_CaptureModeConfig captureModeConfig =
+{
+        TIMER_A_CAPTURECOMPARE_REGISTER_1,        // CC Register 2
+        TIMER_A_CAPTUREMODE_RISING_EDGE,          // Rising Edge
+        TIMER_A_CAPTURE_INPUTSELECT_CCIxB,        // CCIxB Input Select
+        TIMER_A_CAPTURE_SYNCHRONOUS,              // Synchronized Capture
+        TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE,  // Enable interrupt
+        TIMER_A_OUTPUTMODE_OUTBITVALUE            // Output bit value
+};
+
     /* Halting the Watchdog */
     WDT_A_holdTimer();
 
@@ -160,6 +171,8 @@ int main(void)
     /////////////////
     // Timers
     /////////////////
+    /* Configuring Capture Mode */
+    MAP_Timer_A_initCapture(TIMER_A1_BASE, &captureModeConfig);
     Timer_A_configureContinuousMode(TIMER_A1_BASE, &continuousModeConfig);
 
     /////////////////
@@ -234,13 +247,16 @@ int main(void)
     sendCmd("WELCOME");
     movefootball(-120);
     moveFootballToYardage(25);
+    delayTimer(3);
 
-    // TODO: while game is on
+    // while game is on
     while (!game_over)
+		// while (false)
     {
         if (halftime) {
-            // TODO: show halftime screen
-						player1_offense = false;
+            // Show halftime screen
+            sendCmd("OUTCOME Halftime");
+            player1_offense = false;
             resetTimeAndDown(player1_offense);
             moveFootballToYardage(75);
             halftime = false;
@@ -278,7 +294,7 @@ int main(void)
             {
                 if (getYardage() > 70)
                 {
-                    sendCmd("OUTCOME -h \"Field Goal is Good!\"");
+                    sendCmd("OUTCOME \"Field Goal is Good!\"");
                     incrementPlayer1ScoreBy(3);
                     // Move football to 75 yardline for kickoff
                     moveFootballToYardage(75);
@@ -288,7 +304,7 @@ int main(void)
                 {
                     if (r2() > 0.5)
                     {
-                        sendCmd("OUTCOME -h \"Field Goal is Good!\"");
+                        sendCmd("OUTCOME \"Field Goal is Good!\"");
                         incrementPlayer2ScoreBy(3);
                         // Move football to 75 yardline for kickoff
                         moveFootballToYardage(75);
@@ -296,13 +312,13 @@ int main(void)
                     }
                     else
                     {
-                        sendCmd("OUTCOME -h \"Field Goal is No Good!\"");
+                        sendCmd("OUTCOME \"Field Goal is No Good!\"");
                         delayTimer(3);
                     }
                 }
                 else
                 {
-                    sendCmd("OUTCOME -h \"Field Goal is No Good!\"");
+                    sendCmd("OUTCOME \"Field Goal is No Good!\"");
                     delayTimer(3);
                 }
                 player1_offense = false;
@@ -326,7 +342,7 @@ int main(void)
             {
                 if (getYardage() < 30)
                 {
-                    sendCmd("OUTCOME -h \"Field Goal is Good!\"");
+                    sendCmd("OUTCOME \"Field Goal is Good!\"");
                     incrementPlayer2ScoreBy(3);
                     // Move football to 25 yardline for kickoff
                     moveFootballToYardage(25);
@@ -336,7 +352,7 @@ int main(void)
                 {
                     if (r2() > 0.5)
                     {
-                        sendCmd("OUTCOME -h \"Field Goal is Good!\"");
+                        sendCmd("OUTCOME \"Field Goal is Good!\"");
                         incrementPlayer2ScoreBy(3);
                         // Move football to 25 yardline for kickoff
                         moveFootballToYardage(25);
@@ -344,13 +360,13 @@ int main(void)
                     }
                     else
                     {
-                        sendCmd("OUTCOME -h \"Field Goal is No Good!\"");
+                        sendCmd("OUTCOME \"Field Goal is No Good!\"");
                         delayTimer(3);
                     }
                 }
                 else
                 {
-                    sendCmd("OUTCOME -h \"Field Goal is No Good!\"");
+                    sendCmd("OUTCOME \"Field Goal is No Good!\"");
                     delayTimer(3);
                 }
                 player1_offense = true;
@@ -372,6 +388,7 @@ int main(void)
                 {
                     outcome_res = play_combos[i].outcome2;
                 }
+								break;
             }
         }
 
@@ -398,7 +415,7 @@ int main(void)
                 // 2. Wait for game to complete
                 // 3. Move the ball by the result (if there is a tie, nothing hapens)
                 pauseTime();
-                sendCmd("TIC_TAC_TOE X O");
+                sendCmd("TIC_TAC_TOE");
                 ttt_game_completed = false;
                 while (!ttt_game_completed)
                 {
@@ -422,13 +439,12 @@ int main(void)
                 break;
             case SIMON_SAYS:
                 // 1. Create simon says color sequence
-                // 2. TODO: Start simon says get ready
-                // 3. TODO: Poll until countdown is finished
-                // 4. TODO: Start color sequence
-                // 5. Start simon says game
-                // 6. Poll until simon says is completed (interrupt handler will determine when it's over and whether the offense won)
-                // 7. TODO: Show results on Outcome screen 
-                // 8. Move the ball by the result
+                // 2. Start simon says get ready
+                // 3. Start color sequence
+                // 4. Start simon says game
+                // 5. Poll until simon says is completed (interrupt handler will determine when it's over and whether the offense won)
+                // 6. Show results on Outcome screen 
+                // 7. Move the ball by the result
                 pauseTime();
                 for (i = 0; i < 10; i++)
                 {
@@ -450,8 +466,26 @@ int main(void)
                     }
                 }
                 
-                // TODO: Switch to get ready screen
+                sendCmd("SIMON_SAYS");
                 delayTimer(5);
+
+                for (i = 0; i < 10; i++) {
+                    switch (simon_says_seq[i]) {
+                        case BLUE:
+                            sendCmd("SIMON_SAYS blue");
+                            break;
+                        case ORANGE:
+                            sendCmd("SIMON_SAYS orange");
+                            break;
+                        case GREEN:
+                            sendCmd("SIMON_SAYS green");
+                            break;
+                        case RED:
+                            sendCmd("SIMON_SAYS red");
+                            break;
+                    }
+                    delayTimer(1);
+                }
 
                 curr_player_seq = 0;
                 simon_says_happening = true;
@@ -466,21 +500,30 @@ int main(void)
                 if (player1_offense && simon_says_player_won)
                 {
                     scoredTouchdown = moveFootballForwardBy(20);
+                    sendCmd("OUTCOME WON");
                     decrementDistanceBy(20);
+                    delayTimer(3);
                 }
                 else if (!player1_offense && simon_says_player_won)
                 {
                     scoredTouchdown = moveFootballForwardBy(-20);
+                    sendCmd("OUTCOME WON");
                     decrementDistanceBy(20);
+                    delayTimer(3);
+                } else {
+                    sendCmd("OUTCOME LOST");
+                    delayTimer(3);
                 }
 
                 break;
             case ROCK_PAPER_SCISSORS:
-                // 1. TODO: Show Rock Paper and Scissors game placeholder
+                // 1. Show Rock Paper and Scissors game placeholder
                 // 2. Poll until both players choose their move
-                // 3. TODO: Show results on Outcome screen
+                // 3. Show results on Outcome screen
                 // 4. Move the ball by the result
                 pauseTime();
+                sendCmd("ROCK_PAPER_SCISSORS");
+                delayTimer(3);
                 player1_locked = false;
                 player2_locked = false;
 
@@ -497,30 +540,37 @@ int main(void)
                     {
                         if (player1_offense && rps_combos[i].player1_wins)
                         {
+                            sendCmd("OUTCOME \"player1 won\"");
                             scoredTouchdown = moveFootballForwardBy(10);
                             decrementDistanceBy(10);
+                            delayTimer(3);
                         }
+                        break;
                         // Player 2 uses Player 1's results in the array
                     }
                     else if (rps_combos[i].player2 == player1_move && rps_combos[i].player1 == player2_move)
                     {
                         if (!player1_offense && rps_combos[i].player1_wins)
                         {
+                            sendCmd("OUTCOME \"player2 won\"");
                             scoredTouchdown = moveFootballForwardBy(-10);
                             decrementDistanceBy(10);
+                            delayTimer(3);
                         }
+                        break;
                     }
                 }
                 break;
             case TRIVIA:
                 // 1. Show trivia screen with question
-                // 2. Poll for both responses
+                // 2. Poll for both responses, Only defense answers question
+                //if defense correct nothing, if incorrect move ball
                 // 3. Show trivia answer
-                // 4. TODO: Show results on Outcome screen
+                // 4. Show results on Outcome screen
                 // 4. Move the ball by the result
                 pauseTime();
 
-                sprintf(message, "TRIVIA -q \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"",
+                sprintf(message, "TRIVIA \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"",
                         trivia_questions[curr_trivia_question].question,
                         trivia_questions[curr_trivia_question].choice1,
                         trivia_questions[curr_trivia_question].choice2,
@@ -548,7 +598,7 @@ int main(void)
                 }
                 
                 // Send question with the answer
-                sprintf(message, "TRIVIA -q \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%d\"",
+                sprintf(message, "TRIVIA \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%d\"",
                         trivia_questions[curr_trivia_question].question,
                         trivia_questions[curr_trivia_question].choice1,
                         trivia_questions[curr_trivia_question].choice2,
@@ -560,11 +610,16 @@ int main(void)
                 startTime();
                 if (trivia_choice != trivia_questions[curr_trivia_question].answer) {
                     if (player1_offense) {
+
+                        sendCmd("OUTCOME WON");
                         scoredTouchdown = moveFootballForwardBy(10);
                         decrementDistanceBy(10);
+                        delayTimer(5);
                     } else {
+                        sendCmd("OUTCOME WON");
                         scoredTouchdown = moveFootballForwardBy(-10);
                         decrementDistanceBy(10);
+                        delayTimer(5);
                     }
                 }
                 delayTimer(3);
@@ -578,7 +633,7 @@ int main(void)
         }
 
         if (scoredTouchdown) {
-            sendCmd("OUTCOME -h \"TOUCHDOWN\"");
+            sendCmd("OUTCOME \"TOUCHDOWN\"");
             if (player1_offense) {
                 incrementPlayer1ScoreBy(7);
                 moveFootballToYardage(75);
@@ -590,7 +645,7 @@ int main(void)
             resetTimeAndDown(player1_offense);
             delayTimer(3);
         } else {
-            // TODO: update down and distance
+            // update down and distance
             if (getDistance() <= 0) {
                 resetTimeAndDown(player1_offense);
             } else {
@@ -606,7 +661,8 @@ int main(void)
         }
     }
 
-    // TODO: Game over
+    // Game over
+    sendCmd("OUTCOME \"game over\"");
     while (1)
     {
         PCM_gotoLPM0();
@@ -643,7 +699,7 @@ void EUSCIA1_IRQHandler(void)
     {
         int8_t data = reverse(UART_receiveData(EUSCI_A1_BASE));
 
-        if (!player1_locked || (player1_offense && simon_says_happening))
+        if ((!player1_locked || (player1_offense && simon_says_happening)) && (data == 1 || data == 2 || data == 4 || data == 8))
         {
             player1_move = data;
             player1_locked = true;
@@ -666,8 +722,8 @@ void EUSCIA1_IRQHandler(void)
                 simon_says_happening = false;
             }
         }
-        // sprintf(message, "detection_status=%d\n", data);
-        // printDebug(message);
+        sprintf(message, "detection_status=%d\n", data);
+        printDebug(message);
     }
 }
 
@@ -683,7 +739,7 @@ void EUSCIA2_IRQHandler(void)
     {
         int8_t data = reverse(UART_receiveData(EUSCI_A2_BASE));
 
-        if (!player2_locked || (!player1_offense && simon_says_happening))
+        if ((!player2_locked || (!player1_offense && simon_says_happening)) && (data == 1 || data == 2 || data == 4 || data == 8))
         {
             player2_move = data;
             player2_locked = true;

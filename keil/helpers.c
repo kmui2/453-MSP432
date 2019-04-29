@@ -25,7 +25,7 @@ void delayTimer(uint8_t seconds) {
    
    Interrupt_enableInterrupt(INT_TA1_N);
 
-   Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
+   Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_CONTINUOUS_MODE);
 
    while(!countdownDone) {
       PCM_gotoLPM0();

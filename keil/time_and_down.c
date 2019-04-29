@@ -80,9 +80,6 @@ void initTimeAndDown(void) {
     /* Configuring Continuous Mode */
     Timer_A_configureContinuousMode(TIMER_A0_BASE, &continuousModeConfig);
 
-    /* Enabling interrupts and going to sleep */
-    Interrupt_enableSleepOnIsrExit();
-
 }
 
 void resetTimeAndDown(bool offense) {

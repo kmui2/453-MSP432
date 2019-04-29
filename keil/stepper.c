@@ -6,6 +6,7 @@
 
 /* Standard Includes */
 #include <stdint.h>
+#include <stdio.h>
 
 #include <stdbool.h>
 #include <string.h>
@@ -167,8 +168,9 @@ void step(int steps_to_move) {
 void movefootball(int yards){
 	int steps;
 	steps=yards*409.6; 
-	if(yards%5==0){
-		step(steps);
+	step(steps);
+	while(steps_left > 0) {
+        PCM_gotoLPM0();
 	}
 }
 
