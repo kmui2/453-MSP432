@@ -132,9 +132,12 @@ int main(void)
     // UART
     /////////////////
 
-    initUartDebug();
 
     // Receive interrupt from the Pi
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
+            GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+    UART_initModule(EUSCI_A0_BASE, &uartConfig_9600);
+    UART_enableModule(EUSCI_A0_BASE);
     UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
     Interrupt_enableInterrupt(INT_EUSCIA0);
 
