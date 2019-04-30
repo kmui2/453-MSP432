@@ -655,6 +655,7 @@ const Timer_A_UpModeConfig upConfig =
                         trivia_questions[curr_trivia_question].choice4,
                         trivia_questions[curr_trivia_question].answer);
                 sendCmd(message);
+                delayTimer(3);
 
                 startTime();
                 if (trivia_choice == trivia_questions[curr_trivia_question].answer) {
@@ -670,8 +671,10 @@ const Timer_A_UpModeConfig upConfig =
                         decrementDistanceBy(10);
                         delayTimer(5);
                     }
+                } else {
+                    sendCmd("OUTCOME \"Wrong answer.\"");
+                    delayTimer(3);
                 }
-                delayTimer(3);
 
                 curr_trivia_question++;
                 break;
