@@ -515,6 +515,7 @@ const Timer_A_UpModeConfig upConfig =
                     }
                     delayTimer(3);
                 }
+                sendCmd("SIMON_SAYS white");
 
                 curr_player_seq = 0;
                 simon_says_happening = true;
