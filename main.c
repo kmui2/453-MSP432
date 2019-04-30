@@ -245,7 +245,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
     /* Enabling MASTER interrupts */
     Interrupt_enableMaster();
     sendCmd("WELCOME");
-    movefootball(-120);
+    //movefootball(-120);
     moveFootballToYardage(25);
     delayTimer(3);
 
