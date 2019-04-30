@@ -25,7 +25,7 @@
 
 int steps_left = 0;
 
-int absolute_yardage = -10;
+volatile int8_t absolute_yardage = -10;
 
   // Arduino pins for the motor control connection:
 	// TODO: use #define
@@ -52,11 +52,6 @@ void initStepper() {
 		
     GPIO_setAsOutputPin(MOTOR_PORT, MOTOR_PIN_4);
     GPIO_setOutputLowOnPin(MOTOR_PORT, MOTOR_PIN_4);
-	
-    // /* Setting MCLK to REFO at 128Khz for LF mode */
-    // CS_setReferenceOscillatorFrequency(CS_REFO_128KHZ);
-    // CS_initClockSignal(CS_MCLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
-		// PCM_setPowerState(PCM_AM_LF_VCORE0);
 
     /* Configuring Timer32 to 128000 (1s) of MCLK in periodic mode */
     Timer32_initModule(TIMER32_BASE, TIMER32_PRESCALER_1, TIMER32_32BIT,
@@ -165,7 +160,7 @@ void step(int steps_to_move) {
 		}
 
 }
-void movefootball(int yards){
+void movefootball(int8_t yards){
 	int steps;
 	steps=yards*409.6; 
 	step(steps);
@@ -174,12 +169,13 @@ void movefootball(int yards){
 	}
 }
 
-bool moveFootballForwardBy(int yards) {
+bool moveFootballForwardBy(int8_t yards) {
   if (absolute_yardage + yards <= 0 || absolute_yardage + yards >= 100) {
     return true;
   }
-  absolute_yardage += yards;
-  movefootball(yards);
+  absolute_yardage = absolute_yardage + yards;
+	// TODO: add me back
+  //movefootball(yards);
   return false;
 };
 
