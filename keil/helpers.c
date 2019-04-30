@@ -14,29 +14,35 @@ unsigned char reverse(unsigned char b) {
    return b;
 }
 
-double r2()
+float r2()
 {
-    return (double)rand() / (double)RAND_MAX ;
+		float r = (float)rand();
+		float res = r / (float)RAND_MAX;
+    return  res;
 }
 
 void delayTimer(uint8_t seconds) {
-   countdownDone = false;
-   countdownCountLeft = seconds;
-   
-   Interrupt_enableInterrupt(INT_TA1_N);
+	// TODO:
 
-   Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_CONTINUOUS_MODE);
+   countdownDone = false;
+   countdownCountLeft = seconds * 10;
+   
+
+	Interrupt_enableInterrupt(INT_TA1_0);
+	Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
 
    while(!countdownDone) {
       PCM_gotoLPM0();
    }
 
    countdownDone = true;
+	
 };
 
-void TA1_N_IRQHandler(void)
+void TA1_0_IRQHandler(void)
 {
-   Timer_A_clearInterruptFlag(TIMER_A1_BASE);
+    MAP_Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
+            TIMER_A_CAPTURECOMPARE_REGISTER_0);
    countdownCountLeft--;
    if (countdownCountLeft == 0) {
       countdownDone = true;

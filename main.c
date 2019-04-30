@@ -32,27 +32,28 @@ typedef struct
 {
     int8_t player1;
     int8_t player2;
-    double probability;
+    float probability;
     int8_t outcome1; // negative indicates a minigame
     int8_t outcome2;
 } play_combo_t;
 
 play_combo_t play_combos[] = {
     {1, 1, 1.00, ROCK_PAPER_SCISSORS, 5},
-    {1, 2, 0.80, 5, 0},
-    {1, 3, 0.75, 10, 0},
-    {1, 4, 0.90, 5, 0},
-    {2, 1, 0.80, 5, 0},
+    {1, 2, 0.70, 5, 0},
+    {1, 3, 0.65, 10, 0},
+    {1, 4, 0.80, 5, 0},
+    {2, 1, 0.70, 5, 0},
     {2, 2, 1.00, TIC_TAC_TOE, 5},
-    {2, 3, 0.90, 5, 0},
-    {2, 4, 0.80, 10, 5},
-    {3, 1, 0.85, 5, 0},
-    {3, 2, 0.75, 5, 0},
+    {2, 3, 0.80, 5, 0},
+    {2, 4, 0.70, 10, 5},
+    {3, 1, 0.75, 5, 0},
+    {3, 2, 0.65, 5, 0},
     {3, 3, 1.00, TRIVIA, 5},
-    {3, 4, 0.80, 15, 5},
-    {4, 1, 0.75, 10, 0},
-    {4, 2, 0.80, 15, 5},
-    {4, 3, 0.80, 15, 5},
+    {3, 4, 0.70, 15, 5},
+    {4, 1, 0.65, 10, 0},
+    {4, 2, 0.70, 15, 5},
+    //{4, 2, 1.00, 50, 5},
+    {4, 3, 0.70, 15, 5},
     {4, 4, 1.00, SIMON_SAYS, 5},
 };
 
@@ -120,6 +121,10 @@ volatile int8_t simon_says_happening = false;
 volatile bool simon_says_player_won = false;
 volatile int8_t simon_says_seq[10];
 
+
+/* Application Defines  */
+#define TIMER_PERIOD    0x2DC6
+
 int main(void)
 {
 volatile uint32_t ii;
@@ -128,6 +133,7 @@ int i;
 int8_t outcome_res;
 int8_t trivia_choice;
 bool scoredTouchdown = false;
+float res;
 
 
     const eUSCI_UART_Config uartConfig_9600 =
@@ -151,15 +157,16 @@ bool scoredTouchdown = false;
         TIMER_A_DO_CLEAR                    // Clear Counter
 }   ;
 
-/* Timer_A Capture Mode Configuration Parameter */
-const Timer_A_CaptureModeConfig captureModeConfig =
+
+/* Timer_A UpMode Configuration Parameter */
+const Timer_A_UpModeConfig upConfig =
 {
-        TIMER_A_CAPTURECOMPARE_REGISTER_1,        // CC Register 2
-        TIMER_A_CAPTUREMODE_RISING_EDGE,          // Rising Edge
-        TIMER_A_CAPTURE_INPUTSELECT_CCIxB,        // CCIxB Input Select
-        TIMER_A_CAPTURE_SYNCHRONOUS,              // Synchronized Capture
-        TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE,  // Enable interrupt
-        TIMER_A_OUTPUTMODE_OUTBITVALUE            // Output bit value
+        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
+        TIMER_A_CLOCKSOURCE_DIVIDER_64,          // SMCLK/1 = 3MHz
+        TIMER_PERIOD,                           // 5000 tick period
+        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE ,    // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                        // Clear value
 };
 
     /* Halting the Watchdog */
@@ -171,9 +178,8 @@ const Timer_A_CaptureModeConfig captureModeConfig =
     /////////////////
     // Timers
     /////////////////
-    /* Configuring Capture Mode */
-    MAP_Timer_A_initCapture(TIMER_A1_BASE, &captureModeConfig);
-    Timer_A_configureContinuousMode(TIMER_A1_BASE, &continuousModeConfig);
+    /* Configuring Timer_A1 for Up Mode */
+    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
 
     /////////////////
     // UART
@@ -245,6 +251,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
     /* Enabling MASTER interrupts */
     Interrupt_enableMaster();
     sendCmd("WELCOME");
+    // TODO: add me back
     //movefootball(-120);
     moveFootballToYardage(25);
     delayTimer(3);
@@ -378,9 +385,11 @@ const Timer_A_CaptureModeConfig captureModeConfig =
         // Normal plays
         for (i = 0; i < NUM_PLAY_COMBOS; i++)
         {
-            if (play_combos[i].player1 == player1_move && play_combos[i].player2 == player2_move)
+            if (player1_offense && (play_combos[i].player1 == player1_move && play_combos[i].player2 == player2_move))
             {
-                if (r2() < play_combos[i].probability)
+							
+										res = r2();
+                if (res < play_combos[i].probability)
                 {
                     outcome_res = play_combos[i].outcome1;
                 }
@@ -389,7 +398,19 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                     outcome_res = play_combos[i].outcome2;
                 }
 								break;
-            }
+            } else if (!player1_offense && (play_combos[i].player1 == player2_move && play_combos[i].player2 == player1_move))
+            {
+										res = r2();
+                if (res < play_combos[i].probability)
+                {
+                    outcome_res = play_combos[i].outcome1;
+                }
+                else
+                {
+                    outcome_res = play_combos[i].outcome2;
+                }
+								break;
+						}
         }
 
         if (outcome_res >= 0)
@@ -437,7 +458,8 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                     decrementDistanceBy(10);
                 }
                 break;
-            case SIMON_SAYS:
+            case SIMON_SAYS: {
+								uint8_t last_color = 0xFF;
                 // 1. Create simon says color sequence
                 // 2. Start simon says get ready
                 // 3. Start color sequence
@@ -448,15 +470,16 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                 pauseTime();
                 for (i = 0; i < 10; i++)
                 {
-                    if (r2() < 0.25)
+										res = r2();
+                    if (res < 0.25)
                     {
                         simon_says_seq[i] = BLUE;
                     }
-                    else if (r2() < 0.5)
+                    else if (res < 0.5)
                     {
                         simon_says_seq[i] = ORANGE;
                     }
-                    else if (r2() < 0.75)
+                    else if (res < 0.75)
                     {
                         simon_says_seq[i] = GREEN;
                     }
@@ -464,6 +487,12 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                     {
                         simon_says_seq[i] = RED;
                     }
+										
+										if (simon_says_seq[i] == last_color) {
+											i--;
+										} else {
+											last_color = simon_says_seq[i];
+										}
                 }
                 
                 sendCmd("SIMON_SAYS");
@@ -484,7 +513,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                             sendCmd("SIMON_SAYS red");
                             break;
                     }
-                    delayTimer(1);
+                    delayTimer(3);
                 }
 
                 curr_player_seq = 0;
@@ -516,6 +545,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                 }
 
                 break;
+							}
             case ROCK_PAPER_SCISSORS:
                 // 1. Show Rock Paper and Scissors game placeholder
                 // 2. Poll until both players choose their move
@@ -568,7 +598,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
                 // 3. Show trivia answer
                 // 4. Show results on Outcome screen
                 // 4. Move the ball by the result
-                pauseTime();
+                pauseTime(); // Can't create BP
 
                 sprintf(message, "TRIVIA \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"",
                         trivia_questions[curr_trivia_question].question,
@@ -654,7 +684,7 @@ const Timer_A_CaptureModeConfig captureModeConfig =
         }
 
         // Still set to fourth down after play
-        if (getDown() == 4)
+        if (getDown() > 4)
         {
             player1_offense = !player1_offense;
             resetTimeAndDown(player1_offense);
@@ -703,7 +733,7 @@ void EUSCIA1_IRQHandler(void)
         {
             player1_move = data;
             player1_locked = true;
-
+						
             if (simon_says_happening)
             {
                 if (simon_says_seq[curr_player_seq] != player1_move)
@@ -721,9 +751,10 @@ void EUSCIA1_IRQHandler(void)
                 simon_says_player_won = true;
                 simon_says_happening = false;
             }
+						//sprintf(message, "Controller 1: %d\n", player1_move);
+						//printDebug(message);
+						
         }
-        sprintf(message, "detection_status=%d\n", data);
-        printDebug(message);
     }
 }
 
@@ -743,7 +774,7 @@ void EUSCIA2_IRQHandler(void)
         {
             player2_move = data;
             player2_locked = true;
-
+						
             if (simon_says_happening)
             {
                 if (simon_says_seq[curr_player_seq] != player1_move)
@@ -761,9 +792,10 @@ void EUSCIA2_IRQHandler(void)
                 simon_says_player_won = true;
                 simon_says_happening = false;
             }
+						//sprintf(message, "Controller 2: %d\n", player2_move);
+						//printDebug(message);
+						
         }
-        sprintf(message, "detection_status=%d\n", data);
-        printDebug(message);
     }
 }
 
