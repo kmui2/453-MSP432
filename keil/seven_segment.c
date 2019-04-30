@@ -283,16 +283,16 @@ void setSevenSegment(int dec) {
 }
 
 void setSevenSegmentDisplay1(int score) {
-  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT0, decHighPins0[score % 10]);
-  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT0, decLowPins0[score % 10]);
-  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT1, decHighPins1[score / 10]);
-  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT1, decLowPins1[score / 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT0, decHighPins3[score / 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT0, decLowPins3[score / 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT2, decHighPins1[score % 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT2, decLowPins1[score % 10]);
 }
 
 void setSevenSegmentDisplay2(int score) {
-  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT2, decHighPins2[score % 10]);
-  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT2, decLowPins2[score % 10]);
-  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT3, decHighPins3[score / 10]);
-  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT3, decLowPins3[score / 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT1, decHighPins2[score / 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT1, decLowPins2[score / 10]);
+  GPIO_setOutputHighOnPin(SEVEN_SEGMENT_PORT3, decHighPins0[score % 10]);
+  GPIO_setOutputLowOnPin(SEVEN_SEGMENT_PORT3, decLowPins0[score % 10]);
 }
 
