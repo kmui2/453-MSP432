@@ -54,7 +54,9 @@ play_combo_t play_combos[] = {
     {4, 2, 0.70, 15, 5},
     //{4, 2, 1.00, 50, 5},
     {4, 3, 0.70, 15, 5},
-    {4, 4, 1.00, SIMON_SAYS, 5},
+		// TODO: add back
+    //{4, 4, 1.00, SIMON_SAYS, 5},
+    {4, 4, 1.00, TRIVIA, 5},
 };
 
 // ROCK PAPER SCISSORS
@@ -99,7 +101,7 @@ uint8_t curr_trivia_question = 0;
 
 trivia_question_t trivia_questions[] = {
     {"What is the name of the trophy won in a UW vs UMN football game?", "Heartland Trophy", "Freedom Trophy", "Paul Bunyan's Axe", "Little Brown Jug", 2},
-    {"What is teh name of UW's football stadium?", "Lambeu Field", "Camp Randall", "Miller Park", "Kohl Center", 1},
+    {"What is the name of UW's football stadium?", "Lambeu Field", "Camp Randall", "Miller Park", "Kohl Center", 1},
     {"What is the name of UMN's football stadium?", "TCF Bank Stadium", "US Bank Stadium", "Metrodome", "Target Field", 0},
     {"Who is UW's current coach (in May of 2019)?", "Barry Alvarez", "Brett Bielama", "Bo Ryan", "Paul Chryst", 3},
     {"Who is UMN's current coach (in May of 2019)?", "Rick Pitino", "PJ Fleck", "Richard Pitino", "Jerry Kill", 1},
@@ -564,7 +566,8 @@ const Timer_A_UpModeConfig upConfig =
                     PCM_gotoLPM0();
                 }
                 startTime();
-
+								
+								// TODO: Loop not picking an outcome
                 for (i = 0; i < 9; i++)
                 {
                     if (rps_combos[i].player1 == player1_move && rps_combos[i].player2 == player2_move)
@@ -599,7 +602,7 @@ const Timer_A_UpModeConfig upConfig =
                 // 3. Show trivia answer
                 // 4. Show results on Outcome screen
                 // 4. Move the ball by the result
-                pauseTime(); // Can't create BP
+                pauseTime();
 
                 sprintf(message, "TRIVIA \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"",
                         trivia_questions[curr_trivia_question].question,
@@ -639,7 +642,7 @@ const Timer_A_UpModeConfig upConfig =
                 sendCmd(message);
 
                 startTime();
-                if (trivia_choice != trivia_questions[curr_trivia_question].answer) {
+                if (trivia_choice == trivia_questions[curr_trivia_question].answer) {
                     if (player1_offense) {
 
                         sendCmd("OUTCOME WON");
