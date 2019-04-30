@@ -219,7 +219,7 @@ int dec = 0;
 //******************************************************************************
 void TA0_N_IRQHandler(void)
 {
-	char cmd[100];
+	char cmd[20];
 	//char* message;
 	Timer_A_clearInterruptFlag(TIMER_A0_BASE);
 	// GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
@@ -234,6 +234,6 @@ void TA0_N_IRQHandler(void)
 
 	dec = (dec + 1) % 100;
 
-	//sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
-	//sendCmd(cmd);
+	sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
+	sendCmd(cmd);
 }

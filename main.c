@@ -55,8 +55,8 @@ play_combo_t play_combos[] = {
     //{4, 2, 1.00, 50, 5},
     {4, 3, 0.70, 15, 5},
 		// TODO: add back
-    //{4, 4, 1.00, SIMON_SAYS, 5},
-    {4, 4, 1.00, TRIVIA, 5},
+    {4, 4, 1.00, SIMON_SAYS, 5},
+    //{4, 4, 1.00, TRIVIA, 5},
 };
 
 // ROCK PAPER SCISSORS
