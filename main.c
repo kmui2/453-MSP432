@@ -122,20 +122,18 @@ volatile int8_t simon_says_happening = false;
 volatile bool simon_says_player_won = false;
 volatile int8_t simon_says_seq[10];
 
-
 /* Application Defines  */
-#define TIMER_PERIOD    0x2DC6
+#define TIMER_PERIOD 0x2DC6
 
 int main(void)
 {
-volatile uint32_t ii;
-char message[500];
-int i;
-int8_t outcome_res;
-int8_t trivia_choice;
-bool scoredTouchdown = false;
-float res;
-
+    volatile uint32_t ii;
+    char message[500];
+    int i;
+    int8_t outcome_res;
+    int8_t trivia_choice;
+    bool scoredTouchdown = false;
+    float res;
 
     const eUSCI_UART_Config uartConfig_9600 =
         {
@@ -149,26 +147,25 @@ float res;
             EUSCI_A_UART_MODE,                            // UART mode
             EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION // Oversampling
         };
-    
+
     const Timer_A_ContinuousModeConfig continuousModeConfig =
-{
-        TIMER_A_CLOCKSOURCE_ACLK,           // ACLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_1,      // ACLK/1 = 32.768khz
-        TIMER_A_TAIE_INTERRUPT_ENABLE,      // Enable Overflow ISR
-        TIMER_A_DO_CLEAR                    // Clear Counter
-}   ;
+        {
+            TIMER_A_CLOCKSOURCE_ACLK,      // ACLK Clock Source
+            TIMER_A_CLOCKSOURCE_DIVIDER_1, // ACLK/1 = 32.768khz
+            TIMER_A_TAIE_INTERRUPT_ENABLE, // Enable Overflow ISR
+            TIMER_A_DO_CLEAR               // Clear Counter
+        };
 
-
-/* Timer_A UpMode Configuration Parameter */
-const Timer_A_UpModeConfig upConfig =
-{
-        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_64,          // SMCLK/1 = 3MHz
-        TIMER_PERIOD,                           // 5000 tick period
-        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE ,    // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR                        // Clear value
-};
+    /* Timer_A UpMode Configuration Parameter */
+    const Timer_A_UpModeConfig upConfig =
+        {
+            TIMER_A_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
+            TIMER_A_CLOCKSOURCE_DIVIDER_64,     // SMCLK/1 = 3MHz
+            TIMER_PERIOD,                       // 5000 tick period
+            TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
+            TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
+            TIMER_A_DO_CLEAR                    // Clear value
+        };
 
     /* Halting the Watchdog */
     WDT_A_holdTimer();
@@ -259,9 +256,10 @@ const Timer_A_UpModeConfig upConfig =
 
     // while game is on
     while (!game_over)
-		// while (false)
+    // while (false)
     {
-        if (halftime) {
+        if (halftime)
+        {
             // Show halftime screen
             sendCmd("OUTCOME Halftime");
             player1_offense = false;
@@ -288,15 +286,18 @@ const Timer_A_UpModeConfig upConfig =
             // Player 1 Punts
             if (player1_offense && player1_move == 1)
             {
-								sendCmd("OUTCOME \"Player 1 Punts\"");
-                if (getYardage() > 70) {
+                sendCmd("OUTCOME \"Player 1 Punts\"");
+                if (getYardage() > 70)
+                {
                     moveFootballToYardage(100);
-                } else {
+                }
+                else
+                {
                     moveFootballForwardBy(+30);
                 }
                 player1_offense = false;
                 resetTimeAndDown(player1_offense);
-								delayTimer(3);
+                delayTimer(3);
                 continue;
             }
             // Player 1 Field Goals
@@ -332,21 +333,24 @@ const Timer_A_UpModeConfig upConfig =
                     delayTimer(3);
                 }
                 player1_offense = false;
-                resetTimeAndDown(player1_offense); 
+                resetTimeAndDown(player1_offense);
                 continue;
             }
             // Player 2 Punts
             else if (!player1_offense && player2_move == 1)
             {
-								sendCmd("OUTCOME \"Player 2 Punts\"");
-                if (getYardage() < 30) {
+                sendCmd("OUTCOME \"Player 2 Punts\"");
+                if (getYardage() < 30)
+                {
                     moveFootballToYardage(0);
-                } else {
+                }
+                else
+                {
                     moveFootballForwardBy(-30);
                 }
                 player1_offense = true;
                 resetTimeAndDown(player1_offense);
-								delayTimer(3);
+                delayTimer(3);
                 continue;
             }
             // Player 2 Field Goals
@@ -382,7 +386,7 @@ const Timer_A_UpModeConfig upConfig =
                     delayTimer(3);
                 }
                 player1_offense = true;
-                resetTimeAndDown(player1_offense);                
+                resetTimeAndDown(player1_offense);
                 continue;
             }
         }
@@ -392,8 +396,8 @@ const Timer_A_UpModeConfig upConfig =
         {
             if (player1_offense && (play_combos[i].player1 == player1_move && play_combos[i].player2 == player2_move))
             {
-							
-										res = r2();
+
+                res = r2();
                 if (res < play_combos[i].probability)
                 {
                     outcome_res = play_combos[i].outcome1;
@@ -402,10 +406,11 @@ const Timer_A_UpModeConfig upConfig =
                 {
                     outcome_res = play_combos[i].outcome2;
                 }
-								break;
-            } else if (!player1_offense && (play_combos[i].player1 == player2_move && play_combos[i].player2 == player1_move))
+                break;
+            }
+            else if (!player1_offense && (play_combos[i].player1 == player2_move && play_combos[i].player2 == player1_move))
             {
-										res = r2();
+                res = r2();
                 if (res < play_combos[i].probability)
                 {
                     outcome_res = play_combos[i].outcome1;
@@ -414,31 +419,31 @@ const Timer_A_UpModeConfig upConfig =
                 {
                     outcome_res = play_combos[i].outcome2;
                 }
-								break;
-						}
+                break;
+            }
         }
 
         if (outcome_res >= 0)
         {
             if (player1_offense)
             {
-								char msg[20];
-								sprintf(msg, "OUTCOME \"Player 1 Moves %i Yards\"", outcome_res);
+                char msg[20];
+                sprintf(msg, "OUTCOME \"Player 1 Moves %i Yards\"", outcome_res);
                 sendCmd(msg);
                 scoredTouchdown = moveFootballForwardBy(outcome_res);
                 decrementDistanceBy(outcome_res);
-								delayTimer(3);
+                delayTimer(3);
             }
             else
             {
-								char msg[20];
-								sprintf(msg, "OUTCOME \"Player 2 Moves %i Yards\"", outcome_res);
+                char msg[20];
+                sprintf(msg, "OUTCOME \"Player 2 Moves %i Yards\"", outcome_res);
                 sendCmd(msg);
                 scoredTouchdown = moveFootballForwardBy(-outcome_res);
                 decrementDistanceBy(outcome_res);
-								delayTimer(3);
+                delayTimer(3);
             }
-        } 
+        }
         // Outcome is a minigame (defined by a negative number)
         else
         {
@@ -462,32 +467,33 @@ const Timer_A_UpModeConfig upConfig =
                 startTime();
                 if (player1_offense && ttt_player1_won)
                 {
-										sendCmd("OUTCOME \"Player 1 moves 10 yards\"");
+                    sendCmd("OUTCOME \"Player 1 moves 10 yards\"");
                     scoredTouchdown = moveFootballForwardBy(10);
                     decrementDistanceBy(10);
-										delayTimer(3);
+                    delayTimer(3);
                 }
                 else if (!player1_offense && !ttt_player1_won)
                 {
-										sendCmd("OUTCOME \"Player 2 moves 10 yards\"");                    
+                    sendCmd("OUTCOME \"Player 2 moves 10 yards\"");
                     scoredTouchdown = moveFootballForwardBy(-10);
                     decrementDistanceBy(10);
-										delayTimer(3);
+                    delayTimer(3);
                 }
                 break;
-            case SIMON_SAYS: {
-								uint8_t last_color = 0xFF;
+            case SIMON_SAYS:
+            {
+                uint8_t last_color = 0xFF;
                 // 1. Create simon says color sequence
                 // 2. Start simon says get ready
                 // 3. Start color sequence
                 // 4. Start simon says game
                 // 5. Poll until simon says is completed (interrupt handler will determine when it's over and whether the offense won)
-                // 6. Show results on Outcome screen 
+                // 6. Show results on Outcome screen
                 // 7. Move the ball by the result
                 pauseTime();
                 for (i = 0; i < 10; i++)
                 {
-										res = r2();
+                    res = r2();
                     if (res < 0.25)
                     {
                         simon_says_seq[i] = BLUE;
@@ -504,31 +510,36 @@ const Timer_A_UpModeConfig upConfig =
                     {
                         simon_says_seq[i] = RED;
                     }
-										
-										if (simon_says_seq[i] == last_color) {
-											i--;
-										} else {
-											last_color = simon_says_seq[i];
-										}
+
+                    if (simon_says_seq[i] == last_color)
+                    {
+                        i--;
+                    }
+                    else
+                    {
+                        last_color = simon_says_seq[i];
+                    }
                 }
-                
+
                 sendCmd("SIMON_SAYS");
                 delayTimer(5);
 
-                for (i = 0; i < 10; i++) {
-                    switch (simon_says_seq[i]) {
-                        case BLUE:
-                            sendCmd("SIMON_SAYS blue");
-                            break;
-                        case ORANGE:
-                            sendCmd("SIMON_SAYS orange");
-                            break;
-                        case GREEN:
-                            sendCmd("SIMON_SAYS green");
-                            break;
-                        case RED:
-                            sendCmd("SIMON_SAYS red");
-                            break;
+                for (i = 0; i < 10; i++)
+                {
+                    switch (simon_says_seq[i])
+                    {
+                    case BLUE:
+                        sendCmd("SIMON_SAYS blue");
+                        break;
+                    case ORANGE:
+                        sendCmd("SIMON_SAYS orange");
+                        break;
+                    case GREEN:
+                        sendCmd("SIMON_SAYS green");
+                        break;
+                    case RED:
+                        sendCmd("SIMON_SAYS red");
+                        break;
                     }
                     delayTimer(3);
                 }
@@ -547,23 +558,25 @@ const Timer_A_UpModeConfig upConfig =
                 if (player1_offense && simon_says_player_won)
                 {
                     scoredTouchdown = moveFootballForwardBy(20);
-                    sendCmd("OUTCOME \"Player 1 moves 20 yards\"");                    
+                    sendCmd("OUTCOME \"Player 1 moves 20 yards\"");
                     decrementDistanceBy(20);
                     delayTimer(3);
                 }
                 else if (!player1_offense && simon_says_player_won)
                 {
                     scoredTouchdown = moveFootballForwardBy(-20);
-                    sendCmd("OUTCOME \"Player 2 moves 20 yards\"");                                        
+                    sendCmd("OUTCOME \"Player 2 moves 20 yards\"");
                     decrementDistanceBy(20);
                     delayTimer(3);
-                } else {
+                }
+                else
+                {
                     sendCmd("OUTCOME LOST");
                     delayTimer(3);
                 }
 
                 break;
-							}
+            }
             case ROCK_PAPER_SCISSORS:
                 // 1. Show Rock Paper and Scissors game placeholder
                 // 2. Poll until both players choose their move
@@ -581,8 +594,8 @@ const Timer_A_UpModeConfig upConfig =
                     PCM_gotoLPM0();
                 }
                 startTime();
-								
-								// Loop not picking an outcome
+
+                // Loop not picking an outcome
                 for (i = 0; i < 9; i++)
                 {
                     if (rps_combos[i].player1 == player1_move && rps_combos[i].player2 == player2_move)
@@ -645,7 +658,7 @@ const Timer_A_UpModeConfig upConfig =
                     }
                     trivia_choice = player1_move;
                 }
-                
+
                 // Send question with the answer
                 sprintf(message, "TRIVIA \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%d\"",
                         trivia_questions[curr_trivia_question].question,
@@ -658,20 +671,26 @@ const Timer_A_UpModeConfig upConfig =
                 delayTimer(3);
 
                 startTime();
-                if (trivia_choice == trivia_questions[curr_trivia_question].answer) {
-                    if (player1_offense) {
+                if (trivia_choice == trivia_questions[curr_trivia_question].answer)
+                {
+                    if (player1_offense)
+                    {
 
                         sendCmd("OUTCOME \"Player 1 moves 10 yards\"");
                         scoredTouchdown = moveFootballForwardBy(10);
                         decrementDistanceBy(10);
                         delayTimer(5);
-                    } else {
+                    }
+                    else
+                    {
                         sendCmd("OUTCOME \"Player 2 moves 10 yards\"");
                         scoredTouchdown = moveFootballForwardBy(-10);
                         decrementDistanceBy(10);
                         delayTimer(5);
                     }
-                } else {
+                }
+                else
+                {
                     sendCmd("OUTCOME \"Wrong answer.\"");
                     delayTimer(3);
                 }
@@ -684,12 +703,16 @@ const Timer_A_UpModeConfig upConfig =
             }
         }
 
-        if (scoredTouchdown) {
-            if (player1_offense) {
+        if (scoredTouchdown)
+        {
+            if (player1_offense)
+            {
                 sendCmd("OUTCOME \"Player 1 scores a TOUCHDOWN!\"");
                 incrementPlayer1ScoreBy(7);
                 moveFootballToYardage(75);
-            } else {
+            }
+            else
+            {
                 sendCmd("OUTCOME \"Player 2 scores a TOUCHDOWN!\"");
                 incrementPlayer2ScoreBy(7);
                 moveFootballToYardage(25);
@@ -697,11 +720,16 @@ const Timer_A_UpModeConfig upConfig =
             player1_offense = !player1_offense;
             resetTimeAndDown(player1_offense);
             delayTimer(3);
-        } else {
+        }
+        else
+        {
             // update down and distance
-            if (getDistance() <= 0) {
+            if (getDistance() <= 0)
+            {
                 resetTimeAndDown(player1_offense);
-            } else {
+            }
+            else
+            {
                 incrementDown();
             }
         }
@@ -709,10 +737,13 @@ const Timer_A_UpModeConfig upConfig =
         // Still set to fourth down after play
         if (getDown() > 4)
         {
-            if (player1_offense) {
+            if (player1_offense)
+            {
                 sendCmd("OUTCOME \"Turnover to Player 2\"");
-            } else {
-                sendCmd("OUTCOME \"Turnover to Player 1\"");                
+            }
+            else
+            {
+                sendCmd("OUTCOME \"Turnover to Player 1\"");
             }
             player1_offense = !player1_offense;
             resetTimeAndDown(player1_offense);
@@ -721,11 +752,16 @@ const Timer_A_UpModeConfig upConfig =
     }
 
     // Game over
-    if (getPlayer1Score() > getPlayer2Score()) {
+    if (getPlayer1Score() > getPlayer2Score())
+    {
         sendCmd("OUTCOME \"Player 1 won!\"");
-    } else if (getPlayer1Score() < getPlayer2Score()) {
+    }
+    else if (getPlayer1Score() < getPlayer2Score())
+    {
         sendCmd("OUTCOME \"Player 2 won!\"");
-    } else {
+    }
+    else
+    {
         sendCmd("OUTCOME \"It's a tie!\"");
     }
     while (1)
@@ -768,7 +804,7 @@ void EUSCIA1_IRQHandler(void)
         {
             player1_move = data;
             player1_locked = true;
-						
+
             if (simon_says_happening)
             {
                 if (simon_says_seq[curr_player_seq] != player1_move)
@@ -786,9 +822,8 @@ void EUSCIA1_IRQHandler(void)
                 simon_says_player_won = true;
                 simon_says_happening = false;
             }
-						//sprintf(message, "Controller 1: %d\n", player1_move);
-						//printDebug(message);
-						
+            //sprintf(message, "Controller 1: %d\n", player1_move);
+            //printDebug(message);
         }
     }
 }
@@ -809,7 +844,7 @@ void EUSCIA2_IRQHandler(void)
         {
             player2_move = data;
             player2_locked = true;
-						
+
             if (simon_says_happening)
             {
                 if (simon_says_seq[curr_player_seq] != player1_move)
@@ -827,9 +862,8 @@ void EUSCIA2_IRQHandler(void)
                 simon_says_player_won = true;
                 simon_says_happening = false;
             }
-						//sprintf(message, "Controller 2: %d\n", player2_move);
-						//printDebug(message);
-						
+            //sprintf(message, "Controller 2: %d\n", player2_move);
+            //printDebug(message);
         }
     }
 }
