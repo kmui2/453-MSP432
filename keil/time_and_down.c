@@ -212,6 +212,27 @@ void resetDistance(void)
 
 int dec = 0;
 
+// char* itoa(int i, char b[]){
+//     char const digit[] = "0123456789";
+//     char* p = b;
+//     int shifter;
+// 		if(i<0){
+//         *p++ = '-';
+//         i *= -1;
+//     }
+//     shifter = i;
+//     do{ //Move to where representation ends
+//         ++p;
+//         shifter = shifter/10;
+//     }while(shifter);
+//     *p = '\0';
+//     do{ //Move back, inserting digits as u go
+//         *--p = digit[i%10];
+//         i = i/10;
+//     }while(i);
+//     return b;
+// }
+
 //******************************************************************************
 //
 //This is the TIMERA interrupt vector service routine.
@@ -219,7 +240,12 @@ int dec = 0;
 //******************************************************************************
 void TA0_N_IRQHandler(void)
 {
-	char cmd[20];
+	char cmd[100];
+	// char q[4];
+	// char m[4];
+	// char s[4];
+	// char o[4];
+	// char i[4];
 	//char* message;
 	Timer_A_clearInterruptFlag(TIMER_A0_BASE);
 	// GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1);
@@ -233,7 +259,23 @@ void TA0_N_IRQHandler(void)
 	decrementTime();
 
 	dec = (dec + 1) % 100;
-
-	sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
-	sendCmd(cmd);
+	
+	
+	
+	
+	
+	
+	
+	// strcat(cmd, "TIME ");
+	// strcat(cmd, itoa(quarter, q));
+	// strcat(cmd, " ");
+	// strcat(cmd, itoa(minutes, m));
+	// strcat(cmd, " ");
+	// strcat(cmd, itoa(seconds, s));
+	// strcat(cmd, " ");
+	// strcat(cmd, itoa(down, o));
+	// strcat(cmd, " ");
+	// strcat(cmd, itoa(distance, i));
+	// //sprintf(cmd, "TIME %i %i %i %i %i", quarter, minutes, seconds, down, distance);
+	// sendCmd(cmd);
 }

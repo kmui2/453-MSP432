@@ -175,7 +175,7 @@ bool moveFootballForwardBy(int8_t yards) {
   }
   absolute_yardage = absolute_yardage + yards;
 	// TODO: add me back
-  //movefootball(yards);
+  movefootball(yards);
   return false;
 };
 

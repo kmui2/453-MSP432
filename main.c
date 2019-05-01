@@ -42,13 +42,13 @@ play_combo_t play_combos[] = {
     {1, 2, 0.70, 5, 0},
     {1, 3, 0.65, 10, 0},
     {1, 4, 0.80, 5, 0},
-    {2, 1, 0.70, 5, 0},
+    {3, 3, 0.70, 5, 0},
     {2, 2, 1.00, TIC_TAC_TOE, 5},
     {2, 3, 0.80, 5, 0},
     {2, 4, 0.70, 10, 5},
     {3, 1, 0.75, 5, 0},
     {3, 2, 0.65, 5, 0},
-    {3, 3, 1.00, TRIVIA, 5},
+    {2, 1, 1.00, TRIVIA, 5},
     {3, 4, 0.70, 15, 5},
     {4, 1, 0.65, 10, 0},
     {4, 2, 0.70, 15, 5},
@@ -100,14 +100,14 @@ typedef struct
 uint8_t curr_trivia_question = 0;
 
 trivia_question_t trivia_questions[] = {
-    {"What is the name of the trophy won in a UW vs UMN football game?", "Heartland Trophy", "Freedom Trophy", "Paul Bunyan's Axe", "Little Brown Jug", 2},
+    {"What is the name of the trophy won in a UW vs UMN football game?", "Heartland Trophy", "Paul Bunyan's Axe", "Freedom Trophy", "Little Brown Jug", 1},
     {"What is the name of UW's football stadium?", "Lambeu Field", "Camp Randall", "Miller Park", "Kohl Center", 1},
     {"What is the name of UMN's football stadium?", "TCF Bank Stadium", "US Bank Stadium", "Metrodome", "Target Field", 0},
     {"Who is UW's current coach (in May of 2019)?", "Barry Alvarez", "Brett Bielama", "Bo Ryan", "Paul Chryst", 3},
     {"Who is UMN's current coach (in May of 2019)?", "Rick Pitino", "PJ Fleck", "Richard Pitino", "Jerry Kill", 1},
     {"How many meetings were there between UW and UWM as of the end of 2018?", "128", "172", "87", "101", 0},
-    {"Who has more wins in the UW-UMN football series?", "Golden Gophers", "Badgers", "Tied", "Hawkeyes", 2},
-    {"What is the name of the trophy in UW-UMN football game before the axe?", "Heartland Trophy", "River Jug", "Slab of Bacon", "Rodent of Trophy", 2},
+    {"Who has more wins in the UW-UMN football series?", "Golden Gophers", "Tied", "Badgers", "Hawkeyes", 1},
+    {"What is the name of the trophy in UW-UMN football game before the axe?", "Heartland Trophy", "River Jug", "Rodent of Trophy", "Slab of Bacon", 3},
     {"Who holds the longest win streak in the UW-UMN football series?", "Spartans", "Buckeyes", "Golden Gophers", "Badgers", 3},
     {"What is the only year since 1890 UW and UMN did not play each other in football?", "1942", "1906", "1963", "1929", 1},
 };
@@ -254,7 +254,7 @@ const Timer_A_UpModeConfig upConfig =
     Interrupt_enableMaster();
     sendCmd("WELCOME");
     // TODO: add me back
-    //movefootball(-120);
+    movefootball(-120);
     moveFootballToYardage(25);
     delayTimer(3);
 
